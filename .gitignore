@@ -5,20 +5,40 @@ venv/
 *.py[cod]
 *.pyo
 *.pyd
+*.so
+*.dylib
 
+# macOS / OS
+.DS_Store
+
+# Logs / temp
+logs/
+*.log
+hs_err_pid*.log
+tmp/
+.cache/
+
+# ---- Java / Spring ----
 HELP.md
-.gradle
+.gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+*.class
+*.war
+*.jar
 
+# Maven(쓰면)
+target/
+
+# ---- IDE ----
 ### STS ###
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
 bin/
@@ -26,7 +46,7 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -44,4 +64,15 @@ out/
 ### VS Code ###
 .vscode/
 
+# ---- Frontend (리액트 등) ----
+node_modules/
+dist/
+.next/
+build-frontend/
+*.map
+
+# ---- Secrets / Config ----
 src/main/resources/application.properties
+src/main/resources/*.yml
+.env
+.env.*
