@@ -41,7 +41,7 @@ public class HealthController {
     public Map<String, Object> healthPost(@RequestBody Map<String, Object> body) {
         System.out.println("받은 텍스트: " + body);
         // 음성 텍스트
-        String text = body.get("content").toString();
+        String text = body.getOrDefault("content", "").toString();
 
         // FastAPI 호출
         EmotionResponse response = emotionService.analyzeText(text);
