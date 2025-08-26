@@ -2,16 +2,14 @@ package com.project.maumii_be.domain;
 
 import com.project.maumii_be.domain.enums.Theme;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
 @Entity
+@Builder
 @Table(name = "users")
 public class User {
     @Id
