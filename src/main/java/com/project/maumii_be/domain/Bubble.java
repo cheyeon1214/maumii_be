@@ -2,10 +2,7 @@ package com.project.maumii_be.domain;
 
 import com.project.maumii_be.domain.enums.Emotion;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalTime;
 
@@ -14,13 +11,14 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Entity
+@Builder
 public class Bubble {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bId;
 
-    private boolean bTalker;
+    private Boolean bTalker;
 
     private LocalTime bLength;
 
