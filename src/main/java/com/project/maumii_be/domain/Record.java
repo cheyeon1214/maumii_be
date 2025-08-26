@@ -1,10 +1,7 @@
 package com.project.maumii_be.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -17,6 +14,7 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
+@Builder
 public class Record {
 
     @Id
