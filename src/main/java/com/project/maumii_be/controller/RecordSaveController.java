@@ -1,6 +1,7 @@
 package com.project.maumii_be.controller;
 
 import com.project.maumii_be.dto.CreateRecordReq;
+import com.project.maumii_be.service.record.RecordSaveService;
 import com.project.maumii_be.service.record.RecordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -15,7 +16,15 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/records")
 @RequiredArgsConstructor
-public class RecordController {
-    private final RecordService recordService;
+public class RecordSaveController {
+    final RecordSaveService recordSaveService;
 
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> saveRecord(
+            @RequestPart("payload") CreateRecordReq payload,
+            @RequestParam MultiValueMap<String, MultipartFile> files
+    ) {
+        Long id = recordSaveService.saveRecordWithBubbles(payload, files);
+        return ResponseEntity.ok(Map.of("recordId", id));
+    }
 }

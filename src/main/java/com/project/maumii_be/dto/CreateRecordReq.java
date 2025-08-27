@@ -4,8 +4,7 @@ import java.util.List;
 
 
 public record CreateRecordReq(
-        Long recordListId,
-        Long rLengthMs,
-        String rVoiceField,
+        String voiceField,
+        RecordReq record,
         List<BubbleReq> bubbles
 ) {}
