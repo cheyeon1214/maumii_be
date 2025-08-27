@@ -20,4 +20,10 @@ public class ProtectorRes {
                 .uId(protector.getUser().getUId())
                 .build();
     }
+
+    public ProtectorRes(Protector protector) {
+        this.pId = protector.getPId();
+        this.pEmail = protector.getPEmail();
+        this.uId = protector.getUser().getUId();
+    }
 }
