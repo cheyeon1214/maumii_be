@@ -6,5 +6,6 @@ import java.util.List;
 public record CreateRecordReq(
         String voiceField,
         RecordReq record,
-        List<BubbleReq> bubbles
+        List<BubbleReq> bubbles,
+        String recordListTitle
 ) {}

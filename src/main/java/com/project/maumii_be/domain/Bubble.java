@@ -18,7 +18,8 @@ public class Bubble {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bId;
 
-    private Boolean bTalker;
+    @Column(name = "b_talker", nullable = false, length = 20)
+    private String bTalker;
 
     private LocalTime bLength;
 

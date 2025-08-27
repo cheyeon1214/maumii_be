@@ -45,4 +45,10 @@ public class Record {
                 ", rVoice='" + rVoice + '\'' +
                 '}';
     }
+
+    public void addBubble(Bubble b) {
+        if (bubbles == null) bubbles = new ArrayList<>();
+        bubbles.add(b);
+        b.setRecord(this);
+    }
 }

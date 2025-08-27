@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @Builder
 public class BubbleRes {
     Long bId;
-    Boolean bTalker;
+    String bTalker;
     LocalTime bLength;
     Emotion bEmotion;
     String bText;
