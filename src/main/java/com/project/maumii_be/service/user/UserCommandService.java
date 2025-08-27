@@ -74,7 +74,7 @@ public class UserCommandService {
         User user=userRepository.findById(uId)
                 .orElseThrow(()->new UserSearchNotException("사용자 찾을 수 없음.","NOT_FOUND"));
 
-        boolean isExist = protectorRepository.existsByUser_uIdAndPEmail(uId, pEmail);
+        boolean isExist = protectorRepository.existsByUserIdAndEmail(uId, pEmail);
         if (isExist) {
             throw new DuplicateException("이미 등록된 이메일입니다.","DUPLICATE");
         }
