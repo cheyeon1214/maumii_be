@@ -18,4 +18,7 @@ public interface BubbleRepository extends JpaRepository<Bubble, Long> {
     Optional<Bubble> findById(Long bId);
 
     // 버블 텍스트 및 감정 수정 ... update
+
+    // 특정 레코드 번호에 해당하는 버블 전체 삭제
+
 }
