@@ -32,13 +32,15 @@ public class RecordListService {
                 .map(rl -> new RecordListRes().toRecordListRes(rl)).collect(Collectors.toList());
     }
 
+
+
     // 녹음 리스트 삭제
     @Transactional
     public String deleteRecordList(Long rlId) throws RecordListSearchNotException {
         RecordList recordListEntity = recordListRepository.findById(rlId)
                 .orElseThrow(()-> new DMLException("Record List 아이디 오류로 삭제 실패", "Wrong Record List Id"));
         // Bubble 삭제 추가하기
-        
+
         // Record 삭제 추가하기
         recordRepository.deleteByRlId(rlId);
         // Record List 삭제하기

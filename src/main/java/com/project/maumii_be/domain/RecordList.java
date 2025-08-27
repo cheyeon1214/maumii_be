@@ -2,6 +2,9 @@ package com.project.maumii_be.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,6 +21,9 @@ public class RecordList {
     @Column(length = 100)
     private String rlName;
 
+    @UpdateTimestamp
+    private LocalDateTime updateDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "u_id")
     private User user;
@@ -25,8 +31,9 @@ public class RecordList {
     @Override
     public String toString() {
         return "RecordList{" +
-                "rlName='" + rlName + '\'' +
-                ", rlId=" + rlId +
+                "rlId=" + rlId +
+                ", rlName='" + rlName + '\'' +
+                ", updateDate=" + updateDate +
                 '}';
     }
 }
