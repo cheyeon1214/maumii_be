@@ -6,6 +6,7 @@ import com.project.maumii_be.dto.RecordListRes;
 import com.project.maumii_be.exception.DMLException;
 import com.project.maumii_be.exception.RecordListSearchNotException;
 import com.project.maumii_be.repository.RecordListRepository;
+import com.project.maumii_be.repository.RecordRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RecordListService {
     private final RecordListRepository recordListRepository;
+    private final RecordRepository recordRepository;
 
     // 녹음 리스트 조회
     public List<RecordListRes> findRecordLists(String uId) throws RecordListSearchNotException {
@@ -36,7 +38,10 @@ public class RecordListService {
         RecordList recordListEntity = recordListRepository.findById(rlId)
                 .orElseThrow(()-> new DMLException("Record List 아이디 오류로 삭제 실패", "Wrong Record List Id"));
         // Bubble 삭제 추가하기
+        
         // Record 삭제 추가하기
+        recordRepository.deleteByRlId(rlId);
+        // Record List 삭제하기
         recordListRepository.deleteById(rlId);
         return "Record List DELETE OK";
     }

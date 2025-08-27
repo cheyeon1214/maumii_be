@@ -54,7 +54,7 @@ public class RecordService {
         Record recordEntity = recordRepository.findById(rId)
                 .orElseThrow(() -> new DMLException("Record 아이디 오류로 삭제 실패", "Wrong Record Id"));
         // 버블 삭제
-
+        bubbleRepository.deleteByRId(rId);
         // 녹음 삭제
         recordRepository.deleteById(rId);
         return "Record DELETE OK";
