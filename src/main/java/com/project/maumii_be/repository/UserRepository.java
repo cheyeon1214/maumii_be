@@ -7,8 +7,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, String> {
     @Query("select u from User u where u.uId = :uId and u.uPwd = :uPwd")
     Optional<User> login(@Param("uId") String uId,
                              @Param("uPwd") String uPwd);
+
 }
