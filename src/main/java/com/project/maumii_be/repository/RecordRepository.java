@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface RecordRepository extends JpaRepository<Record, Long> {
 
     // 녹음 저장
-    Record save(Record record);
+    // Record save(Record record);
 
     // 녹음 삭제
     void deleteById(Long rId);

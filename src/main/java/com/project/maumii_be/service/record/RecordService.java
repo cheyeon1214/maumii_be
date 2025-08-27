@@ -5,9 +5,14 @@ import com.project.maumii_be.domain.Record;
 import com.project.maumii_be.domain.RecordList;
 import com.project.maumii_be.domain.enums.Emotion;
 import com.project.maumii_be.dto.CreateRecordReq;
+import com.project.maumii_be.dto.RecordReq;
+import com.project.maumii_be.dto.RecordRes;
+import com.project.maumii_be.exception.DMLException;
+import com.project.maumii_be.repository.BubbleRepository;
 import com.project.maumii_be.repository.RecordListRepository;
 import com.project.maumii_be.repository.RecordRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
@@ -21,14 +26,47 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalTime;
 import java.util.Locale;
 import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class RecordService {
-
+    private final BubbleRepository bubbleRepository;
     private final RecordRepository recordRepository;
     private final RecordListRepository recordListRepository;
     private final Path root = Paths.get("uploads/voices");
+
+    // 녹음 저장
+    public RecordRes saveRecord(RecordReq recordReq) {
+        // 버블 저장
+
+        // 레코드 저장 (요청 DTO -> Entity)
+        Record record = recordRepository.save(recordReq.toRecord(recordReq));
+
+        // 레코드 리스트 저장
+
+        return new RecordRes().toRecordRes(record); // Entity -> 응답 DTO
+    }
+
+    // 녹음 삭제
+    public String deleteRecord(Long rId) {
+        Record recordEntity = recordRepository.findById(rId)
+                .orElseThrow(() -> new DMLException("Record 아이디 오류로 삭제 실패", "Wrong Record Id"));
+        // 버블 삭제
+
+        // 녹음 삭제
+        recordRepository.deleteById(rId);
+        return "Record DELETE OK";
+    }
+
+    // 녹음(음성) 파일 조회
+    @Transactional(readOnly = true)
+    public RecordRes findRecordVoice(Long rId) {
+        Record record = recordRepository.findById(rId)
+                .orElseThrow(() -> new DMLException("Record 아이디 오류로 삭제 실패", "Wrong Record Id"));
+        return new RecordRes().toRecordRes(record);
+    }
 
     public Long createRecord(CreateRecordReq req,
                              MultiValueMap<String, MultipartFile> files) {
@@ -58,14 +96,14 @@ public class RecordService {
             for (var dto : req.bubbles()) {
                 Bubble b = new Bubble();
                 b.setRecord(rec);                            // FK
-                b.setBTalker(Boolean.TRUE.equals(dto.talker())); // true=내 말, false=상대
-                if (dto.text() != null) b.setBText(dto.text());
-                if (dto.lengthMs() != null) {
-                    b.setBLength(msToLocalTime(dto.lengthMs()));
-                    sumMs += Math.max(0L, dto.lengthMs());
+                b.setBTalker(Boolean.TRUE.equals(dto.getBTalker())); // true=내 말, false=상대
+                if (dto.getBText() != null) b.setBText(dto.getBText());
+                if (dto.getBLength() != null) {
+                    b.setBLength(msToLocalTime(dto.getBLength().toNanoOfDay()));
+                    sumMs += Math.max(0L, dto.getBLength().toNanoOfDay());
                 }
                 // 감정 없으면 calm
-                b.setBEmotion(parseEmotion(dto.emotion()));
+                b.setBEmotion(parseEmotion(dto.getBEmotion().toString()));
 
                 // ★ 연관관계 편의 메서드: cascade로 같이 저장됨
                 rec.getBubbles().add(b);
