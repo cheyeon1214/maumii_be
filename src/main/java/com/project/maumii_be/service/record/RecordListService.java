@@ -1,5 +1,6 @@
 package com.project.maumii_be.service.record;
 
+import com.project.maumii_be.domain.Bubble;
 import com.project.maumii_be.domain.RecordList;
 import com.project.maumii_be.dto.RecordListReq;
 import com.project.maumii_be.dto.RecordListRes;
@@ -10,6 +11,7 @@ import com.project.maumii_be.repository.RecordRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
@@ -29,10 +31,28 @@ public class RecordListService {
         if(list.isEmpty())
             throw new RecordListSearchNotException("해당 사용자의 녹음 리스트가 없습니다.", "Not Found Record List");
         return list.stream()
-                .map(rl -> new RecordListRes().toRecordListRes(rl)).collect(Collectors.toList());
+                .map(rl -> {
+                    RecordListRes res = new RecordListRes().toRecordListRes(rl);
+//                    Bubble bubble = recordRepository.findRecentBubbleByRecordListId(res.getRlId())
+//                                    .stream().findFirst().orElse(null);
+//                    if(bubble != null)
+//                        res.setRlText(bubble.getBText());
+//                    else
+//                        res.setRlText("");
+                    return res;
+                }).collect(Collectors.toList());
     }
 
+    // 날짜에 해당하는 레코드 리스트 조회
 
+    // 단어로 검색하여 레코드 리스트 조회
+    public List<RecordListRes> findRecordLists(String uId, String keyword) throws RecordListSearchNotException {
+        List<RecordList> list= recordListRepository.findByRlNameLike(uId, "%"+keyword+"%");
+        log.info("{} 단어로 검색 ===> ", keyword);
+        // '검색 결과 없음'은 예외 던지지 않는 게 맞음
+        return list.stream()
+                .map(rl -> new RecordListRes().toRecordListRes(rl)).collect(Collectors.toList());
+    }
 
     // 녹음 리스트 삭제
     @Transactional

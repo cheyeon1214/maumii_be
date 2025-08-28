@@ -37,6 +37,14 @@ public class RecordController {
         return new ResponseEntity<>(recordListService.findRecordLists(uId), HttpStatus.OK);
     }
 
+    // 녹음 리스트 페이지에서 날짜로 리스트 조회하기
+
+    // 녹음 리스트 페이지에서 이름으로 리스트 검색하기
+    @GetMapping("/{uId}/record-list/{keyword}")
+    public ResponseEntity<?> findRecordLists(@PathVariable String uId, @PathVariable String keyword) {
+        return new ResponseEntity<>(recordListService.findRecordLists(uId, keyword), HttpStatus.OK);
+    }
+
     // 녹음 저장 모달에서 녹음 리스트 이름만 조회하기
     @GetMapping("/{uId}/record-name")
     public ResponseEntity<?> findRecordNames(@PathVariable String uId) {
