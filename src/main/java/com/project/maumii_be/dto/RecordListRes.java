@@ -21,6 +21,9 @@ public class RecordListRes {
     @JsonProperty("updateDate")
     LocalDateTime updateDate;
 
+    @JsonProperty("rlText")
+    String rlText;
+
     @JsonProperty("uId")
     String uId;
 

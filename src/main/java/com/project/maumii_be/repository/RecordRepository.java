@@ -36,4 +36,5 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
         """)
     List<Record> findAllWithBubblesByRecordListId(@Param("rlId") Long rlId);
 
+    // rlId 의 레코드 리스트에 저장된 가장 최근 녹음의 가장 첫 버블 조회
 }
