@@ -12,6 +12,7 @@ import com.project.maumii_be.exception.UserSearchNotException;
 import com.project.maumii_be.repository.ProtectorRepository;
 import com.project.maumii_be.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,9 +24,11 @@ public class UserCommandService {
     //보통 @Transactional(readOnly=false)
     final UserRepository userRepository;
     final ProtectorRepository protectorRepository;
+    final PasswordEncoder passwordEncoder;
 
     //회원가입
     public void signUp(User user){
+        user.setUPwd( passwordEncoder.encode(user.getUPwd()));
         userRepository.save(user);
     }
 //    //전화번호 변경
@@ -52,7 +55,7 @@ public class UserCommandService {
             user.setUPhone(req.uPhone());
         }
         if (req.uPwd() != null && !req.uPwd().isBlank()) {
-            user.setUPwd(req.uPwd()); //  인코딩 나중에 해주기
+            user.setUPwd(passwordEncoder.encode(req.uPwd())); //  인코딩 나중에 해주기
         }
         return new UserRes().toUserRes(user);
     }

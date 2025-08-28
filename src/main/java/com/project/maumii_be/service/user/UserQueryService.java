@@ -9,6 +9,7 @@ import com.project.maumii_be.exception.UserSearchNotException;
 import com.project.maumii_be.repository.ProtectorRepository;
 import com.project.maumii_be.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,18 +25,18 @@ public class UserQueryService {
     //보통 @Transactional(readOnly = true)
     final UserRepository userRepository;
     final ProtectorRepository protectorRepository;
+    final PasswordEncoder passwordEncoder;
 
     //user 정보 조회 및 아이디 중복체크
-    public UserRes findUserById(String uId) throws UserSearchNotException {
-        User u= userRepository.findById(uId).orElseThrow(()->new UserSearchNotException("사용자를 찾을 수 없습니다.","NOT_FOUND"));
-        UserRes user = new UserRes().toUserRes(u);
-        return user;
+    public Optional<UserRes> findUserById(String uId) {
+        return userRepository.findById(uId)
+                .map(user -> new UserRes().toUserRes(user));
     }
 
     //로그인
     public UserRes signIn(String uId, String uPwd) throws UserAuthenticationException{
         User ruser = userRepository.login(uId,uPwd).orElseThrow(()->new UserAuthenticationException("사용자 정보가 없습니다. 다시 확인해주세요.","Wrong ID"));
-        if(ruser.getUPwd().equals(uPwd)){
+        if(!passwordEncoder.matches(uPwd,ruser.getUPwd())) {
             throw new UserAuthenticationException("비밀번호가 올바르지 않습니다. ","Wrong Password");
         }
         UserRes user = new UserRes().toUserRes(ruser);
