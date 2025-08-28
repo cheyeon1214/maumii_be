@@ -9,6 +9,7 @@ import com.project.maumii_be.dto.CreateRecordReq;
 import com.project.maumii_be.dto.RecordReq;
 import com.project.maumii_be.dto.RecordRes;
 import com.project.maumii_be.exception.DMLException;
+import com.project.maumii_be.exception.RecordSearchNotException;
 import com.project.maumii_be.repository.BubbleRepository;
 import com.project.maumii_be.repository.RecordListRepository;
 import com.project.maumii_be.repository.RecordRepository;
@@ -25,6 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -40,13 +42,12 @@ public class RecordService {
     private final Path root = Paths.get("uploads/voices");
 
     // 녹음 삭제
-    public String deleteRecord(Long rId) {
-        Record recordEntity = recordRepository.findById(rId)
-                .orElseThrow(() -> new DMLException("Record 아이디 오류로 삭제 실패", "Wrong Record Id"));
-        // 버블 삭제
-        bubbleRepository.deleteByRId(rId);
+    @Transactional
+    public String deleteByRIdIn(Collection<Long> rIds) throws RecordSearchNotException {
+        List<Record> list = recordRepository.findByrIdIn(rIds);
+        // 버블 삭제는 cascade
         // 녹음 삭제
-        recordRepository.deleteById(rId);
+        recordRepository.deleteAllInBatch(list); // deleteAll 도 가능하지만 대량 삭제에서 성능이 더 좋음
         return "Record DELETE OK";
     }
 

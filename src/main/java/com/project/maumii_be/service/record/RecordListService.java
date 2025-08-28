@@ -1,6 +1,7 @@
 package com.project.maumii_be.service.record;
 
 import com.project.maumii_be.domain.Bubble;
+import com.project.maumii_be.domain.Record;
 import com.project.maumii_be.domain.RecordList;
 import com.project.maumii_be.dto.RecordListReq;
 import com.project.maumii_be.dto.RecordListRes;
@@ -65,10 +66,10 @@ public class RecordListService {
     public String deleteRecordList(Long rlId) throws RecordListSearchNotException {
         RecordList recordListEntity = recordListRepository.findById(rlId)
                 .orElseThrow(()-> new DMLException("Record List 아이디 오류로 삭제 실패", "Wrong Record List Id"));
-        // Bubble 삭제 추가하기
-
-        // Record 삭제 추가하기
-        recordRepository.deleteByRlId(rlId);
+        List<Record> records = recordRepository.findByRecordList_RlId(rlId);
+        // Record 삭제 추가하기 -> Record 는 Bubble 과 양방향이라 cascade 삭제
+        // JPQL 쿼리문으로 삭제하면 Bubble cascade 삭제됨
+        recordRepository.deleteAll(records);
         // Record List 삭제하기
         recordListRepository.deleteById(rlId);
         return "Record List DELETE OK";
