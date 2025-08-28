@@ -4,6 +4,7 @@ import com.project.maumii_be.domain.Protector;
 import com.project.maumii_be.domain.User;
 import com.project.maumii_be.dto.ProtectorRes;
 import com.project.maumii_be.dto.UserRes;
+import com.project.maumii_be.dto.user.UserAuthReq;
 import com.project.maumii_be.exception.UserAuthenticationException;
 import com.project.maumii_be.exception.UserSearchNotException;
 import com.project.maumii_be.repository.ProtectorRepository;
@@ -34,9 +35,9 @@ public class UserQueryService {
     }
 
     //로그인
-    public UserRes signIn(String uId, String uPwd) throws UserAuthenticationException{
-        User ruser = userRepository.login(uId,uPwd).orElseThrow(()->new UserAuthenticationException("사용자 정보가 없습니다. 다시 확인해주세요.","Wrong ID"));
-        if(!passwordEncoder.matches(uPwd,ruser.getUPwd())) {
+    public UserRes signIn(UserAuthReq.SigninReq req) throws UserAuthenticationException{
+        User ruser = userRepository.login(req.getUId(),req.getUPwd()).orElseThrow(()->new UserAuthenticationException("사용자 정보가 없습니다. 다시 확인해주세요.","Wrong ID"));
+        if(!passwordEncoder.matches(req.getUPwd(),ruser.getUPwd())) {
             throw new UserAuthenticationException("비밀번호가 올바르지 않습니다. ","Wrong Password");
         }
         UserRes user = new UserRes().toUserRes(ruser);

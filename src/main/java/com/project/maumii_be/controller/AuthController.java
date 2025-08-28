@@ -1,25 +1,71 @@
 package com.project.maumii_be.controller;
 
 import com.project.maumii_be.domain.User;
-import com.project.maumii_be.exception.UserAuthenticationException;
+import com.project.maumii_be.dto.UserRes;
+import com.project.maumii_be.dto.user.UserAuthReq;
+import com.project.maumii_be.exception.UserSearchNotException;
 import com.project.maumii_be.repository.UserRepository;
 import com.project.maumii_be.service.user.UserCommandService;
 import com.project.maumii_be.service.user.UserQueryService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
     final UserCommandService userCommandService;
-
+    final UserQueryService userQueryService;
+    final PasswordEncoder passwordEncoder;
+    final UserRepository userRepository;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody User user){
-        userCommandService.signUp(user);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<?> signup(@RequestBody UserAuthReq.SignupReq req){
+        log.info(req.toString());
+        userCommandService.signUp(req);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/signin")
+    public ResponseEntity<?> signin(@RequestBody UserAuthReq.SigninReq req, HttpSession session) {
+        log.info("\n 로그인 사용자 >>>> "+req.toString());
+        User user= userRepository.findById(req.getUId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "아이디/비밀번호를 확인하세요."));
+
+
+        if (!passwordEncoder.matches(req.getUPwd(), user.getUPwd())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "아이디/비밀번호를 확인하세요.");
+        }
+
+        UserRes sessionUser = new UserRes(
+                user.getUId(),
+                user.getUName(),
+                user.getUPhone(),
+                user.getUTheme(),
+                user.isUExposure()
+        );
+
+        session.setAttribute("LOGIN_USER", sessionUser);   // ★ 세션 저장
+        return ResponseEntity.ok(sessionUser);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me(HttpSession session) {
+        UserRes su = (UserRes) session.getAttribute("LOGIN_USER");
+        if (su == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.accepted().body("사용자 정보 확인");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok().build();
     }
 }
