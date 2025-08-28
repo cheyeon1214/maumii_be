@@ -31,6 +31,9 @@ public class RecordRes {
     @JsonProperty("rlId")
     private Long rlId;
 
+    @JsonProperty("rlName")
+    private String rlName;
+
     @JsonProperty("bubbles")
     private List<BubbleRes> bubbles;   // ✅ 여기 타입 확실히!
 
@@ -41,6 +44,7 @@ public class RecordRes {
                 .rCreatedAt(record.getRCreatedAt())
                 .rLength(record.getRLength())
                 .rVoice(record.getRVoice())
+                .rlName(record.getRecordList() != null ? record.getRecordList().getRlName() : null)
                 .rlId(record.getRecordList() != null ? record.getRecordList().getRlId() : null)
                 .bubbles(record.getBubbles() == null ? List.of() :
                         record.getBubbles().stream().map(b -> BubbleRes.builder()

@@ -27,12 +27,13 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
 
     // rlId로 해당 리스트의 Record와 그 하위 Bubbles까지 한 방에 로드
     @Query("""
-      select distinct r
-      from Record r
-      left join fetch r.bubbles b
-      where r.recordList.rlId = :rlId
-      order by r.rId desc, b.bId asc
-    """)
+          select distinct r
+          from Record r
+          join fetch r.recordList rl
+          left join fetch r.bubbles b
+          where rl.rlId = :rlId
+          order by r.rId desc, b.bId asc
+        """)
     List<Record> findAllWithBubblesByRecordListId(@Param("rlId") Long rlId);
 
     // rlId 의 레코드 리스트에 저장된 가장 최근 녹음의 가장 첫 버블 조회
