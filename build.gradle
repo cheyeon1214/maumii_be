@@ -36,8 +36,10 @@ dependencies {
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'net.nurigo:sdk:4.3.0'
 //	implementation 'org.apache.tomcat:tomcat-websocket:10.1.26'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	// 기본 Spring Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
