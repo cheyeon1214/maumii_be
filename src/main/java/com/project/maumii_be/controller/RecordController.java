@@ -72,8 +72,6 @@ public class RecordController {
     // 녹음 저장하기
     // 녹음 리스트, 녹음, 버블 테이블에 모두 들어가야 함
     // 녹음 리스트 updateDate 갱신
-    // 녹음 삭제하기
-    // => 다중 선택 삭제가 가능해야 함 !!!
 
     // 녹음 파일 조회하기 (음성 파일 포함)
     @GetMapping("/record-voice/{rId}")
@@ -85,6 +83,12 @@ public class RecordController {
     @GetMapping("/record-list/{rlId}")
     public ResponseEntity<?> getRecord(@PathVariable Long rlId) {
         return new ResponseEntity<>(bubbleService.getRecord(rlId), HttpStatus.OK);
+    }
+
+    // 녹음 다중 삭제하기
+    @DeleteMapping("/records")
+    public ResponseEntity<?> deleteRecords(@RequestBody List<Long> rIds) {
+        return new ResponseEntity<>(recordService.deleteByRIdIn(rIds), HttpStatus.OK);
     }
 
     // bId 기준으로 버블 정보 조히하기
