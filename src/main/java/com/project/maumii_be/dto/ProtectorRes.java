@@ -1,6 +1,8 @@
 package com.project.maumii_be.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.maumii_be.domain.Protector;
+import jakarta.persistence.JoinColumn;
 import lombok.*;
 
 @AllArgsConstructor
@@ -9,8 +11,13 @@ import lombok.*;
 @Setter
 @Builder
 public class ProtectorRes {
+    @JsonProperty("pId")
     Long pId;
+
+    @JsonProperty("pEmail")
     String pEmail;
+
+    @JsonProperty("uId")
     String uId;
 
     public ProtectorRes toProtectorRes(Protector protector) {

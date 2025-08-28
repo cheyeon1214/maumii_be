@@ -1,5 +1,6 @@
 package com.project.maumii_be.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.maumii_be.domain.Protector;
 import com.project.maumii_be.domain.User;
 import lombok.*;
@@ -10,7 +11,9 @@ import lombok.*;
 @Setter
 @Builder
 public class ProtectorReq {
+    @JsonProperty("pEmail")
     String pEmail;
+    @JsonProperty("uId")
     String uId;
 
     public Protector toProtector(ProtectorReq protectorReq) {
