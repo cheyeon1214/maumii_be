@@ -26,7 +26,8 @@ public class Record {
 
     private LocalTime rLength;
 
-    @Lob
+//    @Lob
+    @Column(length = 512)
     private String rVoice;
 
     @ManyToOne(fetch = FetchType.LAZY)
