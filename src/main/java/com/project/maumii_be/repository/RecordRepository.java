@@ -39,12 +39,12 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
     List<Record> findAllWithBubblesByRecordListId(@Param("rlId") Long rlId);
 
     // rlId 의 레코드 리스트에 저장된 가장 최근 녹음의 가장 첫 버블 조회
-//    @Query("""
-//        select b from Bubble b
-//        join b.record r
-//        join r.recordList rl
-//        where rl.rlId = :rlId
-//        order by r.rId desc, b.bId asc
-//    """)
-//    List<Bubble> findRecentBubbleByRecordListId(@Param("rlId") Long rlId);
+    @Query("""
+        select b from Bubble b
+        join fetch b.record r
+        join fetch r.recordList rl
+        where rl.rlId = :rlId
+        order by r.rId desc, b.bId asc
+    """)
+    List<Bubble> findRecentBubbleByRecordListId(@Param("rlId") Long rlId);
 }

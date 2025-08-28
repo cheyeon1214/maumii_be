@@ -28,22 +28,19 @@ public class RecordListService {
     // 녹음 리스트 조회
     public List<RecordListRes> findRecordLists(String uId) throws RecordListSearchNotException {
         List<RecordList> list = recordListRepository.findByUser_uIdOrderByRlIdDesc(uId);
-        if(list.isEmpty())
-            throw new RecordListSearchNotException("해당 사용자의 녹음 리스트가 없습니다.", "Not Found Record List");
+        // '녹음 리스트 없음'은 예외 던지지 않는 게 맞음
         return list.stream()
                 .map(rl -> {
                     RecordListRes res = new RecordListRes().toRecordListRes(rl);
-//                    Bubble bubble = recordRepository.findRecentBubbleByRecordListId(res.getRlId())
-//                                    .stream().findFirst().orElse(null);
-//                    if(bubble != null)
-//                        res.setRlText(bubble.getBText());
-//                    else
-//                        res.setRlText("");
+                    Bubble bubble = recordRepository.findRecentBubbleByRecordListId(res.getRlId())
+                                    .stream().findFirst().orElse(null);
+                    if(bubble != null)
+                        res.setRlText(bubble.getBText());
+                    else
+                        res.setRlText("");
                     return res;
                 }).collect(Collectors.toList());
     }
-
-    // 날짜에 해당하는 레코드 리스트 조회
 
     // 단어로 검색하여 레코드 리스트 조회
     public List<RecordListRes> findRecordLists(String uId, String keyword) throws RecordListSearchNotException {
@@ -51,7 +48,16 @@ public class RecordListService {
         log.info("{} 단어로 검색 ===> ", keyword);
         // '검색 결과 없음'은 예외 던지지 않는 게 맞음
         return list.stream()
-                .map(rl -> new RecordListRes().toRecordListRes(rl)).collect(Collectors.toList());
+                .map(rl -> {
+                    RecordListRes res = new RecordListRes().toRecordListRes(rl);
+                    Bubble bubble = recordRepository.findRecentBubbleByRecordListId(res.getRlId())
+                            .stream().findFirst().orElse(null);
+                    if(bubble != null)
+                        res.setRlText(bubble.getBText());
+                    else
+                        res.setRlText("");
+                    return res;
+                }).collect(Collectors.toList());
     }
 
     // 녹음 리스트 삭제
