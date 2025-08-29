@@ -29,17 +29,6 @@ public class User {
     @JsonProperty("uPhone")
     private String uPhone;
 
-    // 소셜용
-    private String provider;      // "kakao"
-    private String providerId;    // 카카오에서 내려주는 id (문자열로 저장 추천)
-    // 편의: 소셜로만 가입한 사용자도 유니크하게 보장
-    @Column(unique = true)
-    private String socialKey;     // provider + ":" + providerId
-
-    private String email;
-
-    private String role = "ROLE_USER";
-
     @Column(nullable = false, columnDefinition = "varchar(20) default 'cloud'") //DB 기본설정
     @Enumerated(EnumType.STRING)
     @JsonProperty("uTheme")

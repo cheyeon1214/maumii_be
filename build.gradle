@@ -44,7 +44,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	// 기본 Spring Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
 // (선택) Bean Validation을 @Valid/@NotBlank 등에 쓴다면
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
