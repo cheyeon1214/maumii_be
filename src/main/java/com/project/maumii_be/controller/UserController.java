@@ -3,6 +3,7 @@ package com.project.maumii_be.controller;
 import com.project.maumii_be.domain.User;
 import com.project.maumii_be.dto.UserRes;
 import com.project.maumii_be.dto.user.UserInfoReq;
+import com.project.maumii_be.service.MailSendingService;
 import com.project.maumii_be.service.user.UserCommandService;
 import com.project.maumii_be.service.user.UserQueryService;
 import jakarta.servlet.http.HttpSession;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     final UserCommandService userCommandService;
     final UserQueryService userQueryService;
+    final MailSendingService mailSendingService;
 
 
     //사용자 정보 조회
@@ -91,6 +93,27 @@ public class UserController {
         }
 
         return ResponseEntity.ok(result);
+    }
+
+    // 인증코드 발송
+    @PostMapping("/{uId}/protectors/send-code")
+    public ResponseEntity<?> sendVerificationCode(@PathVariable String uId, @RequestParam String email) {
+        try {
+            mailSendingService.sendVerificationCode(email);
+            return ResponseEntity.ok("인증코드가 발송되었습니다.");
+        } catch (Exception e) {
+            log.error("이메일 발송 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("이메일 발송에 실패했습니다.");
+        }
+    }
+
+    // 인증코드 검증
+    @PostMapping("/{uId}/protectors/verify-code")
+    public ResponseEntity<?> verifyCode(@PathVariable String uId, @RequestParam String email, @RequestParam String code) {
+        if (mailSendingService.verifyCode(email, code)) {
+            return ResponseEntity.ok("인증이 완료되었습니다.");
+        }
+        return ResponseEntity.badRequest().body("인증코드가 올바르지 않습니다.");
     }
 
     //보호자 추가

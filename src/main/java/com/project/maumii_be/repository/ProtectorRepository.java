@@ -18,5 +18,5 @@ public interface ProtectorRepository extends JpaRepository<Protector, Long> {
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value="delete from Protector p where p.pId = :pId and p.user.uId = :uId")
-    int deleteByPIdAndUser_uId(Long pId, String userUId);
+    int deleteByPIdAndUser_uId(Long pId, String uId);
 }
