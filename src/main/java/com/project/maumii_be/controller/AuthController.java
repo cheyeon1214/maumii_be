@@ -58,9 +58,12 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<?> me(HttpSession session) {
+        log.info("=== /me 호출 - 세션 확인 ===");
         UserRes su = (UserRes) session.getAttribute("LOGIN_USER");
+        log.info("세션에서 가져온 사용자 정보: {}", su);
+
         if (su == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        return ResponseEntity.accepted().body("사용자 정보 확인");
+        return ResponseEntity.ok(su); // 사용자 객체 반환
     }
 
     @PostMapping("/logout")
