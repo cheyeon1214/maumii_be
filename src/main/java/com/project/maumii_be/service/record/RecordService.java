@@ -47,7 +47,7 @@ public class RecordService {
         List<Record> list = recordRepository.findByrIdIn(rIds);
         // 버블 삭제는 cascade
         // 녹음 삭제
-        recordRepository.deleteAllInBatch(list); // deleteAll 도 가능하지만 대량 삭제에서 성능이 더 좋음
+        recordRepository.deleteAll(list); // deleteAll 도 가능하지만 대량 삭제에서 성능이 더 좋음
         return "Record DELETE OK";
     }
 

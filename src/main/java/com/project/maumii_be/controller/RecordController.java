@@ -86,12 +86,12 @@ public class RecordController {
     }
 
     // 녹음 다중 삭제하기
-    @DeleteMapping("/records")
+    @DeleteMapping("/record")
     public ResponseEntity<?> deleteRecords(@RequestBody List<Long> rIds) {
         return new ResponseEntity<>(recordService.deleteByRIdIn(rIds), HttpStatus.OK);
     }
 
-    // bId 기준으로 버블 정보 조히하기
+    // bId 기준으로 버블 정보 조회하기
     @GetMapping("/bubble/{bId}")
     public ResponseEntity<?> findBubble(@PathVariable Long bId) {
         return new ResponseEntity<>(bubbleService.findById(bId), HttpStatus.OK);
