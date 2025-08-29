@@ -12,7 +12,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> login(@Param("uId") String uId,
                              @Param("uPwd") String uPwd);
 
-
 //    User findByUIdAndUPwd(String uId, String uPwd);
 
 }

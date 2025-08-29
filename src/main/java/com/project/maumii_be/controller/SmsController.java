@@ -23,18 +23,35 @@ public class SmsController {
     private final SmsService smsCodeService;
     private final MessageSendingService messageSendingService; // 네가 만든 SMS 발송 컴포넌트
 
+    // SmsController.java
     @PostMapping("/send")
     public ResponseEntity<?> send(@RequestBody SmsSendReq req) {
+        String rawPhone = req.getPhone();
+        String normalized = rawPhone.replaceAll("\\D+", "");
+        if (normalized.startsWith("82")) normalized = "0" + normalized.substring(2);
+
         String code = String.format("%06d", (int)(Math.random() * 1_000_000));
-        smsCodeService.saveCode(req.getPhone(), code, Duration.ofMinutes(3));
+        smsCodeService.saveCode(normalized, code, Duration.ofMinutes(3));
 
         try {
-            messageSendingService.sendCode(req.getPhone(), code);
+            messageSendingService.sendCode(normalized, code);
+            return ResponseEntity.ok(Map.of("ok", true));
+        } catch (net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException e) {
+            // 개별 실패 사유들
+            log.error("[SMS] CoolSMS not received: {}", e.getFailedMessageList());
+            return ResponseEntity.status(502).body(Map.of(
+                    "ok", false,
+                    "provider", "coolsms",
+                    "errors", e.getFailedMessageList()
+            ));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("문자 발송 실패: " + e.getMessage());
+            log.error("[SMS] send error", e);
+            return ResponseEntity.status(500).body(Map.of(
+                    "ok", false,
+                    "message", "문자 발송 중 오류",
+                    "detail", e.getMessage()
+            ));
         }
-
-        return ResponseEntity.ok("전송 완료");
     }
 
     @PostMapping("/verify")

@@ -10,11 +10,17 @@ public class UserAuthReq {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SignupReq{
+        @JsonProperty("uId")
         private String uId;
+        @JsonProperty("uName")
         private String uName;
+        @JsonProperty("uPwd")
         private String uPwd;
+        @JsonProperty("uPhone")
         private String uPhone;
+        @JsonProperty("uTheme")
         private String uTheme;  // "cloud" / "bear"
+        @JsonProperty("uExposure")
         private String uExposure;    // "all" / "calm"
     }
 
