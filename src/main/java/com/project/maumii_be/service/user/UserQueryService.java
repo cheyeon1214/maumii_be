@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,10 +47,17 @@ public class UserQueryService {
 
     //보호자 정보 불러오기
     public List<ProtectorRes> findProtector(String uId) throws UserSearchNotException {
+        // 먼저 사용자가 존재하는지 확인
+        User user = userRepository.findById(uId)
+                .orElseThrow(() -> new UserSearchNotException("사용자 정보가 없습니다. 다시 확인해주세요.", "USER_NOT_FOUND"));
+
         List<Protector> list = protectorRepository.findByUser_uId(uId);
-        if(list == null || list.isEmpty()) {
-            throw new UserSearchNotException("사용자 정보가 없습니다. 다시 확인해주세요.","EMPTY USER");
+
+        // 보호자가 없어도 빈 리스트 반환 (예외 발생 안함)
+        if(list == null) {
+            return new ArrayList<>();
         }
+
         return list.stream().map(ProtectorRes::new).collect(Collectors.toList());
     }
 
