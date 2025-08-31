@@ -1,6 +1,8 @@
 package com.project.maumii_be.controller;
 
+import com.project.maumii_be.domain.User;
 import com.project.maumii_be.dto.CreateRecordReq;
+import com.project.maumii_be.dto.UserRes;
 import com.project.maumii_be.service.record.RecordSaveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,45 +27,16 @@ public class RecordSaveController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> saveRecord(
             @RequestPart("record") CreateRecordReq payload,
-            @RequestParam(required = false) MultiValueMap<String, MultipartFile> files
+            @RequestParam(required = false) MultiValueMap<String, MultipartFile> files,
+            jakarta.servlet.http.HttpSession session
     ) {
-        // ✅ 전체 payload를 JSON으로 안전하게 로깅
-        try {
-            log.info("[save] payload json = {}", om.writeValueAsString(payload));
-        } catch (Exception e) {
-            log.warn("[save] payload stringify failed: {}", e.toString());
+        var su = (UserRes) session.getAttribute("LOGIN_USER");
+        if (su == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "UNAUTHORIZED"));
         }
+        String uId = su.getUId(); // 또는 getUId()
 
-        // ✅ 널 가드 및 핵심 필드 로그
-        if (payload == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "record part is missing"));
-        }
-        if (payload.record() == null) {
-            log.warn("[save] payload.record() is null");
-        } else {
-            log.info("[save] record.rlId={}, rLength={}, rVoice={}",
-                    payload.record().getRlId(),
-                    payload.record().getRLength(),
-                    payload.record().getRVoice());
-        }
-
-        if (payload.bubbles() == null || payload.bubbles().isEmpty()) {
-            log.warn("[save] bubbles is empty");
-        } else {
-            for (int i = 0; i < payload.bubbles().size(); i++) {
-                var b = payload.bubbles().get(i);
-                log.info("[save] bubble[{}] talker={}, text='{}', emotion={}, durationMs={}",
-                        i, b.getBTalker(), b.getBText(), b.getBEmotion(), b.getDurationMs());
-            }
-        }
-
-        // ✅ 파일 존재 여부만 간단 체크
-        if (files != null) {
-            log.info("[save] files keys = {}", files.keySet());
-            files.forEach((k, v) -> log.info("  - {} : {} files", k, (v==null?0:v.size())));
-        }
-
-        Long id = recordSaveService.saveRecordWithBubbles(payload, files);
+        Long id = recordSaveService.saveRecordWithBubbles(payload, files, uId); // ⬅️ 전달
         return ResponseEntity.ok(Map.of("recordId", id));
     }
 }

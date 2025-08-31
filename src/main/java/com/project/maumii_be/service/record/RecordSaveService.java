@@ -4,12 +4,14 @@ package com.project.maumii_be.service.record;
 import com.project.maumii_be.domain.Bubble;
 import com.project.maumii_be.domain.Record;
 import com.project.maumii_be.domain.RecordList;
+import com.project.maumii_be.domain.User;
 import com.project.maumii_be.dto.BubbleReq;
 import com.project.maumii_be.dto.CreateRecordReq;
 import com.project.maumii_be.dto.RecordReq;
 import com.project.maumii_be.dto.RecordRes;
 import com.project.maumii_be.repository.RecordListRepository;
 import com.project.maumii_be.repository.RecordRepository;
+import com.project.maumii_be.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,9 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.*;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -35,22 +34,27 @@ import java.util.UUID;
 public class RecordSaveService {
     private final RecordRepository recordRepository;
     private final RecordListRepository recordListRepository;
+    private final UserRepository userRepository;
 
     private final Path root = Paths.get(System.getProperty("app.upload.dir", "uploads/voices"));
 
     public Long saveRecordWithBubbles(CreateRecordReq payload,
-                                      MultiValueMap<String, MultipartFile> files) {
+                                      MultiValueMap<String, MultipartFile> files, String uId) {
         try { Files.createDirectories(root); } catch (IOException ignore) {}
 
         // --- RecordList resolve/create ---
         RecordReq rreq = payload.record();
         if (rreq == null) throw new IllegalArgumentException("record is required");
+        var owner = userRepository.findById(uId)
+                .orElseThrow(() -> new IllegalArgumentException("user not found: " + uId));
 
-        RecordList recordList = resolveOrCreateRecordList(rreq.getRlId(), payload.recordListTitle());
+
+        RecordList recordList = resolveOrCreateRecordList(rreq.getRlId(), payload.recordListTitle(), owner);
 
         // --- Record entity ---
         Record rec = rreq.toRecord(rreq);
         rec.setRecordList(recordList);
+//        rec.setUser(owner);
         if (rec.getBubbles() == null) rec.setBubbles(new ArrayList<>());
 
         // (선택) 세션 통짜 오디오가 프론트에서 따로 올 때만 사용
@@ -116,19 +120,21 @@ public class RecordSaveService {
 
     /* --------- 유틸 --------- */
 
-    private RecordList resolveOrCreateRecordList(Long rlId, String newTitle) {
+    private RecordList resolveOrCreateRecordList(Long rlId, String newTitle, User owner) {
         if (rlId != null) {
             return recordListRepository.findById(rlId)
                     .orElseThrow(() -> new IllegalArgumentException("recordList not found: " + rlId));
         }
         if (newTitle != null && !newTitle.isBlank()) {
             RecordList rl = new RecordList();
+            rl.setUser(owner);
             rl.setRlName(newTitle);
             return recordListRepository.save(rl);
         }
         // 아무 것도 없으면 “기본” 자동 생성
         RecordList rl = new RecordList();
         rl.setRlName("기본");
+        rl.setUser(owner); // ⬅️ 리스트 소유자 저장
         return recordListRepository.save(rl);
     }
 
@@ -205,6 +211,16 @@ public class RecordSaveService {
                 .map(RecordRes::toRecordRes)   // ✅ bubbles 포함해서 변환
                 .toList();
     }
+
+    //userId로 검증하는로직
+//    public List<RecordRes> getRecordsInList(Long rlId, String uId) {
+//        var rl = recordListRepository.findById(rlId)
+//                .orElseThrow(() -> new IllegalArgumentException("recordList not found"));
+//        if (!rl.getUser().getUId().equals(uId)) throw new IllegalArgumentException("not your list");
+//
+//        var records = recordRepository.findAllWithBubblesByRecordListIdAndUserUId(rlId, uId);
+//        return records.stream().map(RecordRes::toRecordRes).toList();
+//    }
 
 
 }

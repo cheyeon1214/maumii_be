@@ -52,4 +52,5 @@ public class Record {
         bubbles.add(b);
         b.setRecord(this);
     }
+
 }
