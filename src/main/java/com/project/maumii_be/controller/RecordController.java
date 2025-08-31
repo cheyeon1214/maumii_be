@@ -1,9 +1,6 @@
 package com.project.maumii_be.controller;
 
-import com.project.maumii_be.dto.BubbleReq;
-import com.project.maumii_be.dto.CreateRecordReq;
-import com.project.maumii_be.dto.RecordListReq;
-import com.project.maumii_be.dto.RecordListRes;
+import com.project.maumii_be.dto.*;
 import com.project.maumii_be.service.record.BubbleService;
 import com.project.maumii_be.service.record.RecordListService;
 import com.project.maumii_be.service.record.RecordService;
@@ -99,8 +96,8 @@ public class RecordController {
 
     // 버블 텍스트 및 감정 수정하기
     @PutMapping("/bubble/{bId}")
-    public ResponseEntity<?> updateBubble(@PathVariable Long bId, @RequestBody BubbleReq bubbleReq) {
-        return new ResponseEntity<>(bubbleService.updateBubble(bId, bubbleReq), HttpStatus.ACCEPTED);
+    public ResponseEntity<?> updateBubble(@PathVariable Long bId, @RequestBody BubbleUpdateReq bubbleUpdateReq) {
+        return new ResponseEntity<>(bubbleService.updateBubble(bId, bubbleUpdateReq), HttpStatus.ACCEPTED);
     }
 
 }
