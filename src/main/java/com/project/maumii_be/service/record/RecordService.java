@@ -8,11 +8,14 @@ import com.project.maumii_be.exception.RecordSearchNotException;
 import com.project.maumii_be.repository.RecordListRepository;
 import com.project.maumii_be.repository.RecordRepository;
 import com.project.maumii_be.repository.BubbleRepository;
+import com.project.maumii_be.util.EncryptionUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.crypto.SecretKey;
+import java.io.IOException;
 import java.nio.file.*;
 import java.util.Collection;
 import java.util.List;
@@ -31,6 +34,8 @@ public class RecordService {
     private final Path uploadRoot = Paths.get(System.getProperty("app.upload.dir", "uploads/voices"));
     // DB에 저장하는 공개 경로 접두어
     private static final String PUBLIC_PREFIX = "/voices/";
+    // Spring이 Bean 주입하는 암호화 키 (실제 서비스에서는 안전하게 관리)
+    private final SecretKey secretKey;
 
     /** 공개 경로(/voices/xxx.wav) -> 서버 실제 파일 경로 */
     private Path toRealPath(String publicPath) {
@@ -71,5 +76,20 @@ public class RecordService {
         Record record = recordRepository.findById(rId)
                 .orElseThrow(() -> new DMLException("Record 아이디 오류로 조회 실패", "Wrong Record Id"));
         return new RecordRes().toRecordRes(record); // 여기 안에 rVoice(= /voices/xxx.wav) 포함
+    }
+
+    @Transactional(readOnly = true)
+    public Path getDecryptedVoicePath(Long rId) throws Exception {
+        Record record = recordRepository.findById(rId)
+                .orElseThrow(() -> new DMLException("Record 아이디 오류로 조회 실패", "Wrong Record Id"));
+
+        String dbPath = record.getRVoice(); // 예: /voices/xxx.enc
+        Path encPath = uploadRoot.resolve(dbPath.replace(PUBLIC_PREFIX, "")); // 실제 파일 경로
+
+        // 복호화할 임시 파일 생성
+        Path tempWav = Files.createTempFile("play_", ".wav");
+
+        EncryptionUtil.decryptFile(encPath.toFile(), tempWav.toFile(), secretKey);
+        return tempWav; // 컨트롤러에서 파일 스트림으로 반환
     }
 }
