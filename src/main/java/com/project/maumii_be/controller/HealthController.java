@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/healthz")
+@RequestMapping("/api/healthz")
 // 프런트 출처(포트 5050)만 열기. 필요하면 127.0.0.1도 추가
 @CrossOrigin(
-        origins = { "http://localhost:5050", "http://127.0.0.1:5050" },
+        origins = { "http://localhost:5050", "https://192.168.230.9:5173" },
         allowedHeaders = "*",
         methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS }
 )

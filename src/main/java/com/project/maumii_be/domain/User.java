@@ -37,6 +37,8 @@ public class User {
     @JsonProperty("uExposure")
     private boolean uExposure;
 
+    private String role;
+
     @Override
     public String toString() {
         return "User{" +

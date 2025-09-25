@@ -20,10 +20,11 @@ public class ServletWsConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(sttHandler, "/ws/stt")
-                .setAllowedOrigins("http://localhost:5050", "http://127.0.0.1:5050");
+                // ✅ 개발용: 패턴으로 프론트 모든 포트 허용
+                .setAllowedOriginPatterns("*");
 
         registry.addHandler(echoHandler(), "/ws/echo")
-                .setAllowedOrigins("http://localhost:5050", "http://127.0.0.1:5050");
+                .setAllowedOriginPatterns("*");
     }
 
     @Bean

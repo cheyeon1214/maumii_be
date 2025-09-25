@@ -3,6 +3,7 @@ package com.project.maumii_be.controller;
 import com.project.maumii_be.domain.User;
 import com.project.maumii_be.dto.UserRes;
 import com.project.maumii_be.dto.user.UserInfoReq;
+import com.project.maumii_be.security.CustomMemberDetails;
 import com.project.maumii_be.service.MailSendingService;
 import com.project.maumii_be.service.user.UserCommandService;
 import com.project.maumii_be.service.user.UserQueryService;
@@ -10,6 +11,8 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -42,56 +45,34 @@ public class UserController {
 
     //전화번호/비밀번호 변경
     @PutMapping("/{uId}/account")
-    public ResponseEntity<?> updateAccount(@PathVariable("uId") String uId
-            , @RequestBody UserInfoReq.AccountUpdateReq req
-            , HttpSession session) {
-        UserRes result = userCommandService.updateAccount(uId, req);
+    public ResponseEntity<?> updateAccount(@PathVariable String uId,
+                                           @RequestBody UserInfoReq.AccountUpdateReq req) {
+        // JWT에서 로그인 유저 uId 가져오기
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomMemberDetails principal = (CustomMemberDetails) auth.getPrincipal();
+        String loginUId = principal.getMember().getUId();
 
-        // 세션의 사용자 정보도 업데이트
-        UserRes sessionUser = (UserRes) session.getAttribute("LOGIN_USER");
-        if (sessionUser != null && sessionUser.getUId().equals(uId)) {
-            // 업데이트된 정보로 새 UserRes 객체 생성
-            UserRes updatedUser = userQueryService.findUserById(uId).orElse(null);
-            if (updatedUser != null) {
-                UserRes newSessionUser = new UserRes(
-                        updatedUser.getUId(),
-                        updatedUser.getUName(),
-                        updatedUser.getUPhone(), // 업데이트된 전화번호
-                        updatedUser.getUTheme(),
-                        updatedUser.isUExposure()
-                );
-                session.setAttribute("LOGIN_USER", newSessionUser);
-                log.info("세션 사용자 정보 업데이트 완료: {}", newSessionUser);
-            }
+        if (!loginUId.equals(uId)) {
+            return ResponseEntity.status(403).body("본인만 수정할 수 있습니다.");
         }
 
+        UserRes result = userCommandService.updateAccount(uId, req);
+        // 세션 갱신 제거, 업데이트된 결과만 반환
         return ResponseEntity.ok(result);
     }
 
-    //테마,노출범위 변경
     @PutMapping("/{uId}/preference")
-    public ResponseEntity<?> updatePreference(@PathVariable("uId") String uId
-            ,@RequestBody UserInfoReq.PreferencesUpdateReq req
-            ,HttpSession session){
-        UserRes result=userCommandService.updatePreference(uId, req);
+    public ResponseEntity<?> updatePreference(@PathVariable String uId,
+                                              @RequestBody UserInfoReq.PreferencesUpdateReq req) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomMemberDetails principal = (CustomMemberDetails) auth.getPrincipal();
+        String loginUId = principal.getMember().getUId();
 
-        UserRes sessionUser = (UserRes) session.getAttribute("LOGIN_USER");
-        if (sessionUser != null && sessionUser.getUId().equals(uId)) {
-            // 업데이트된 정보로 새 UserRes 객체 생성
-            UserRes updatedUser = userQueryService.findUserById(uId).orElse(null);
-            if (updatedUser != null) {
-                UserRes newSessionUser = new UserRes(
-                        updatedUser.getUId(),
-                        updatedUser.getUName(),
-                        updatedUser.getUPhone(), // 업데이트된 전화번호
-                        updatedUser.getUTheme(),
-                        updatedUser.isUExposure()
-                );
-                session.setAttribute("LOGIN_USER", newSessionUser);
-                log.info("세션 사용자 정보 업데이트 완료: {}", newSessionUser);
-            }
+        if (!loginUId.equals(uId)) {
+            return ResponseEntity.status(403).body("본인만 수정할 수 있습니다.");
         }
 
+        UserRes result = userCommandService.updatePreference(uId, req);
         return ResponseEntity.ok(result);
     }
 
