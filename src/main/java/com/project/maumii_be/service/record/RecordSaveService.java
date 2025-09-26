@@ -12,6 +12,7 @@ import com.project.maumii_be.dto.RecordRes;
 import com.project.maumii_be.repository.RecordListRepository;
 import com.project.maumii_be.repository.RecordRepository;
 import com.project.maumii_be.repository.UserRepository;
+import com.project.maumii_be.util.EncryptionUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.crypto.SecretKey;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.*;
@@ -40,6 +43,8 @@ public class RecordSaveService {
     private final Path root = Paths.get(System.getProperty("app.upload.dir", "uploads/voices"));
     // 클라이언트에 돌려줄 공개 URL prefix
     private static final String PUBLIC_PREFIX = "/voices/";
+    // Spring이 Bean 주입하는 암호화 키 (실제 서비스에서는 안전하게 관리)
+    private final SecretKey secretKey;
 
     // ---------------------- 핵심 변경: 모두 WAV로 저장 ----------------------
 
@@ -66,6 +71,10 @@ public class RecordSaveService {
             if (vf != null && !vf.isEmpty()) {
                 Path wav = transcodeToWav(vf);     // ★ 변환
                 rec.setRVoice(PUBLIC_PREFIX + wav.getFileName());
+//                // ★ 암호화 버전 호출
+//                Path enc = transcodeAndEncryptToWav(vf, secretKey);
+//                // 공개 URL로 바꿔서 DB에 저장
+//                rec.setRVoice(PUBLIC_PREFIX + enc.getFileName());
             }
         }
 
@@ -78,7 +87,7 @@ public class RecordSaveService {
                 // 파일 → WAV 변환 저장
                 MultipartFile f = (bq.getFileField() == null ? null : files.getFirst(bq.getFileField()));
                 if (f != null && !f.isEmpty()) {
-                    Path wav = transcodeToWav(f);   // ★ 변환
+                    Path wav = transcodeToWav(f);   // 개별 버블은 암호화하지 않고 WAV로 저장
                     bubbleWavs.add(wav);
                 }
 
@@ -98,8 +107,9 @@ public class RecordSaveService {
         // 버블 파일들 WAV로 합쳐 rVoice 생성
         if (!bubbleWavs.isEmpty() && rec.getRVoice() == null) {
             try {
-                Path merged = mergeWavFiles(bubbleWavs);  // ★ WAV concat
-                rec.setRVoice(PUBLIC_PREFIX + merged.getFileName());
+                Path merged = mergeWavFiles(bubbleWavs);  // WAV 합치기
+                Path enc = transcodeAndEncryptToWav(merged); // merge된 WAV만 암호화
+                rec.setRVoice(PUBLIC_PREFIX + enc.getFileName()); // DB에 암호화된 파일 경로 저장
             } catch (Exception e) {
                 log.error("voice merge failed", e);
                 // 실패시 첫 파일 경로라도 지정
@@ -148,6 +158,18 @@ public class RecordSaveService {
             return dst;
         } catch (Exception e) {
             throw new RuntimeException("voice transcode failed", e);
+        }
+    }
+
+    // Path를 받아서 암호화만 수행
+    private Path transcodeAndEncryptToWav(Path wavFile) {
+        try {
+            Path dst = root.resolve(UUID.randomUUID() + ".enc");
+            Files.createDirectories(dst.getParent());
+            EncryptionUtil.encryptFile(wavFile.toFile(), dst.toFile(), secretKey);
+            return dst;
+        } catch (Exception e) {
+            throw new RuntimeException("encrypt merged WAV failed", e);
         }
     }
 
