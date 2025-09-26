@@ -19,6 +19,6 @@ public class EmotionService {
         request.setText(text);
 
         // POST 로 /analyze 호출
-        return restTemplate.postForObject("http://ai:8000/analyze", request, EmotionResponse.class);
+        return restTemplate.postForObject("http://localhost:8000/analyze", request, EmotionResponse.class);
     }
 }
