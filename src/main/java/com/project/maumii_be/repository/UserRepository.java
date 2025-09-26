@@ -13,5 +13,7 @@ public interface UserRepository extends JpaRepository<User, String> {
                              @Param("uPwd") String uPwd);
 
 //    User findByUIdAndUPwd(String uId, String uPwd);
-
+// UserRepository.java
+@Query("select u.uName from User u where u.uId = :uId")
+Optional<String> findNameByUId(@Param("uId") String uId);
 }
