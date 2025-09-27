@@ -51,8 +51,7 @@ public class MonthlyEmotionReportService {
         MimeMessageHelper helper = new MimeMessageHelper(msg, "UTF-8");
         helper.setTo(toEmail);
         helper.setSubject("마음이 감정 캘린더 리포트 - " + ym.getYear() + "년 " + ym.getMonthValue() + "월");
-        helper.setText(calendarHtml, true); // HTML 본문
-        helper.setText(flowHtml, true);
+        helper.setText(calendarHtml + flowHtml, true); // HTML 본문
         mailSender.send(msg);
     }
 }

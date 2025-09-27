@@ -25,8 +25,8 @@ public interface ChartReportRepository extends JpaRepository<Bubble, Long> {
            "group by DATE(r.r_created_at)\n" +
            "order by date", nativeQuery = true)
     List<Object[]> findEmotionGroupFlow(@Param("userId") String userId,
-                                        @Param("year") int inputYear,
-                                        @Param("month") int inputMonth);
+                                        @Param("inputYear") int inputYear,
+                                        @Param("inputMonth") int inputMonth);
 
     // 부정 감정이 많은 상대 내림차순 정렬
 

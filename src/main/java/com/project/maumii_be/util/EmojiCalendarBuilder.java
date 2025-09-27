@@ -71,7 +71,8 @@ public class EmojiCalendarBuilder {
 
         // HTML
         return new StringBuilder()
-                .append("<html><head><meta charset='UTF-8'></head><body>")
+                .append("<html><head><meta charset='UTF-8'></head><script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>" +
+                        "<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css\"><body>")
                 .append("<div style='").append(wrap).append("'>")
                 .append("<h2 style='").append(h2).append("'>")
                 .append(escapeHtml(childName)).append("의 감정 캘린더 – ")
@@ -82,7 +83,7 @@ public class EmojiCalendarBuilder {
                 .append("<tbody>").append(tbody).append("</tbody>")
                 .append("</table>")
                 .append("<div style='margin:10px 2px 4px;font-size:12px;color:#666'>• 데이터가 없는 날은 점(•)으로 표시됩니다.</div>")
-                .append("</div></body></html>")
+                .append("</div>")
                 .toString();
     }
 
