@@ -1,14 +1,17 @@
 package com.project.maumii_be.controller;
 
-import com.project.maumii_be.dto.EmotionResponse;
-import com.project.maumii_be.service.EmotionService;
+import com.project.maumii_be.dto.bubble.EmotionResponse;
+import com.project.maumii_be.dto.bubble.TextRequest;
+import com.project.maumii_be.service.record.EmotionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/healthz")
+@RequestMapping("/api")
+@Tag(name = "AI Model API", description = "SST 와 감정 분석 모델 관련 API")
 // 프런트 출처(포트 5050)만 열기. 필요하면 127.0.0.1도 추가
 @CrossOrigin(
         origins = { "http://localhost:5050", "https://192.168.230.9:5173" },
@@ -32,12 +35,12 @@ public class HealthController {
             "score", 0.0
     );
 
-    @GetMapping
+    @GetMapping(value = "/healthz")
     public Map<String, Object> healthGet() {
         return lastResponse;
     }
 
-    @PostMapping
+    @PostMapping("/healthz")
     public Map<String, Object> healthPost(@RequestBody Map<String, Object> body) {
         System.out.println("받은 텍스트: " + body);
         // 음성 텍스트
@@ -53,5 +56,10 @@ public class HealthController {
                     "score", response.getScore()
                 );
         return lastResponse;
+    }
+
+    @PostMapping(value = "/emotion")
+    public EmotionResponse analyze(@RequestBody TextRequest request) {
+        return emotionService.analyzeText(request.getText());
     }
 }

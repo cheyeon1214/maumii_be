@@ -1,4 +1,4 @@
-package com.project.maumii_be.service;
+package com.project.maumii_be.service.user;
 
 import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.message.exception.NurigoEmptyResponseException;

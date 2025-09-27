@@ -2,6 +2,7 @@
 package com.project.maumii_be.controller;
 
 import com.project.maumii_be.util.EncryptionUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.core.io.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,8 @@ import java.io.InputStream;
 import java.nio.file.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/voices")
+@Tag(name = "Voice API", description = "녹음된 음성 파일 관련 API")
 @CrossOrigin(
         origins = {
                 "http://localhost:5050","http://127.0.0.1:5050",
@@ -36,7 +38,7 @@ public class VoiceController {
     private final Path baseDir = Paths.get(System.getProperty("app.upload.dir", "/uploads/voices"));
 
     /** 파일명에 . 이 들어가도 매칭되도록 :.+ 추가 */
-    @GetMapping("/voices/{fileName:.+}")
+    @GetMapping("/{fileName:.+}")
     public ResponseEntity<?> getVoice(
             @PathVariable String fileName,
             @RequestHeader HttpHeaders headers) throws Exception {

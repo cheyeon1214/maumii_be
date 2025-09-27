@@ -1,7 +1,6 @@
 package com.project.maumii_be;
 
-import com.project.maumii_be.dto.EmotionResponse;
-import com.project.maumii_be.service.EmotionService;
+import com.project.maumii_be.service.record.EmotionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

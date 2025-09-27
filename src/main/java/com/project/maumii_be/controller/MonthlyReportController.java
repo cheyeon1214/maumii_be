@@ -2,14 +2,15 @@ package com.project.maumii_be.controller;
 
 import com.project.maumii_be.domain.Protector;
 import com.project.maumii_be.repository.ProtectorRepository;
-import com.project.maumii_be.service.MonthlyEmotionReportService;
+import com.project.maumii_be.service.user.MonthlyEmotionReportService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import java.time.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/reports")
+@Tag(name = "Report API", description = "보호자에게 전송하는 레포트 관련 API")
 public class MonthlyReportController {
 
     private final MonthlyEmotionReportService reportService;

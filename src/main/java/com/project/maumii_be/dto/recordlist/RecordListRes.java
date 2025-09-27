@@ -1,4 +1,4 @@
-package com.project.maumii_be.dto;
+package com.project.maumii_be.dto.recordlist;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.maumii_be.domain.RecordList;

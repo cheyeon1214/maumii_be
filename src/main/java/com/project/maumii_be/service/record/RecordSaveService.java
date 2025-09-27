@@ -5,10 +5,10 @@ import com.project.maumii_be.domain.Bubble;
 import com.project.maumii_be.domain.Record;
 import com.project.maumii_be.domain.RecordList;
 import com.project.maumii_be.domain.User;
-import com.project.maumii_be.dto.BubbleReq;
-import com.project.maumii_be.dto.CreateRecordReq;
-import com.project.maumii_be.dto.RecordReq;
-import com.project.maumii_be.dto.RecordRes;
+import com.project.maumii_be.dto.bubble.BubbleReq;
+import com.project.maumii_be.dto.record.CreateRecordReq;
+import com.project.maumii_be.dto.record.RecordReq;
+import com.project.maumii_be.dto.record.RecordRes;
 import com.project.maumii_be.repository.RecordListRepository;
 import com.project.maumii_be.repository.RecordRepository;
 import com.project.maumii_be.repository.UserRepository;
@@ -21,7 +21,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.crypto.SecretKey;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.*;
@@ -47,7 +46,6 @@ public class RecordSaveService {
     private final SecretKey secretKey;
 
     // ---------------------- 핵심 변경: 모두 WAV로 저장 ----------------------
-
     public Long saveRecordWithBubbles(CreateRecordReq payload,
                                       MultiValueMap<String, MultipartFile> files,
                                       String uId) {
@@ -118,7 +116,6 @@ public class RecordSaveService {
         }
 
         if (totalMs > 0) rec.setRLength(msToLocalTime(totalMs));
-
         recordRepository.save(rec);
         return rec.getRId();
     }
@@ -173,7 +170,7 @@ public class RecordSaveService {
         }
     }
 
-    /** WAV 파일들을 하나로 합치기 (모두 16k/mono/pcm_s16le 가정) */
+    // WAV 파일들을 하나로 합치기 (모두 16k/mono/pcm_s16le 가정)
     private Path mergeWavFiles(List<Path> wavs) throws IOException, InterruptedException {
         // concat list.txt 생성
         Path listFile = Files.createTempFile("concat_", ".txt");
@@ -212,7 +209,6 @@ public class RecordSaveService {
 
     // 나머지 메서드(resolveOrCreateRecordList, msToLocalTime 등)는 그대로 유지
 
-
     /* --------- 유틸 --------- */
 
     private RecordList resolveOrCreateRecordList(Long rlId, String newTitle, User owner) {
@@ -229,7 +225,7 @@ public class RecordSaveService {
         // 아무 것도 없으면 “기본” 자동 생성
         RecordList rl = new RecordList();
         rl.setRlName("기본");
-        rl.setUser(owner); // ⬅️ 리스트 소유자 저장
+        rl.setUser(owner); // 리스트 소유자 저장
         return recordListRepository.save(rl);
     }
 
@@ -264,7 +260,7 @@ public class RecordSaveService {
         return java.time.LocalTime.ofSecondOfDay(sec).withNano(nano);
     }
 
-    /** ffmpeg concat demuxer로 오디오 병합 (동일 코덱/샘플레이트 가정) */
+    // ffmpeg concat demuxer로 오디오 병합 (동일 코덱/샘플레이트 가정)
     private Path mergeAudioFiles(List<Path> parts) throws IOException, InterruptedException {
         // concat 리스트 파일 생성
         Path listFile = Files.createTempFile("concat_", ".txt");
@@ -303,11 +299,11 @@ public class RecordSaveService {
         List<Record> records = recordRepository.findAllWithBubblesByRecordListId(rlId);
 
         return records.stream()
-                .map(RecordRes::toRecordRes)   // ✅ bubbles 포함해서 변환
+                .map(RecordRes::toRecordRes)   // bubbles 포함해서 변환
                 .toList();
     }
 
-    //userId로 검증하는로직
+    //userId로 검증하는 로직
 //    public List<RecordRes> getRecordsInList(Long rlId, String uId) {
 //        var rl = recordListRepository.findById(rlId)
 //                .orElseThrow(() -> new IllegalArgumentException("recordList not found"));
@@ -316,6 +312,4 @@ public class RecordSaveService {
 //        var records = recordRepository.findAllWithBubblesByRecordListIdAndUserUId(rlId, uId);
 //        return records.stream().map(RecordRes::toRecordRes).toList();
 //    }
-
-
 }

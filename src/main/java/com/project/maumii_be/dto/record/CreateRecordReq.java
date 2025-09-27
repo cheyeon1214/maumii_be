@@ -1,4 +1,6 @@
-package com.project.maumii_be.dto;
+package com.project.maumii_be.dto.record;
+
+import com.project.maumii_be.dto.bubble.BubbleReq;
 
 import java.util.List;
 

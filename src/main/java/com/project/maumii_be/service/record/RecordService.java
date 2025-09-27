@@ -2,7 +2,7 @@
 package com.project.maumii_be.service.record;
 
 import com.project.maumii_be.domain.Record;
-import com.project.maumii_be.dto.RecordRes;
+import com.project.maumii_be.dto.record.RecordRes;
 import com.project.maumii_be.exception.DMLException;
 import com.project.maumii_be.exception.RecordSearchNotException;
 import com.project.maumii_be.repository.RecordListRepository;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
-import java.io.IOException;
 import java.nio.file.*;
 import java.util.Collection;
 import java.util.List;

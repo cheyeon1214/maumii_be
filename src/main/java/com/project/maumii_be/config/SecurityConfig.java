@@ -42,20 +42,19 @@ public class SecurityConfig {
         LoginFilter loginFilter = new LoginFilter(authManager, jwtUtil);
         loginFilter.setFilterProcessesUrl("/api/auth/signin"); // 로그인 엔드포인트
 
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(f -> f.disable())
-                .httpBasic(b -> b.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/signin", "/api/auth/signup", "/api/sms/**", "/ws/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                // 로그인(JWT 발급) 필터
-                .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
-                // 이후 요청의 JWT 검증 필터
-                .addFilterBefore(new JWTFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class);
+        http.csrf(csrf -> csrf.disable())
+            .cors(Customizer.withDefaults())
+            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .formLogin(f -> f.disable())
+            .httpBasic(b -> b.disable())
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/api/auth/signin", "/api/auth/signup", "/api/sms/**", "/ws/**", "/swagger-ui/**", "/api-docs/**").permitAll()
+                    .anyRequest().authenticated()
+            )
+            // 로그인(JWT 발급) 필터
+            .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
+            // 이후 요청의 JWT 검증 필터
+            .addFilterBefore(new JWTFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

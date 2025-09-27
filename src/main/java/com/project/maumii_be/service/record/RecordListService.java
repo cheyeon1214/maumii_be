@@ -3,8 +3,8 @@ package com.project.maumii_be.service.record;
 import com.project.maumii_be.domain.Bubble;
 import com.project.maumii_be.domain.Record;
 import com.project.maumii_be.domain.RecordList;
-import com.project.maumii_be.dto.RecordListReq;
-import com.project.maumii_be.dto.RecordListRes;
+import com.project.maumii_be.dto.recordlist.RecordListReq;
+import com.project.maumii_be.dto.recordlist.RecordListRes;
 import com.project.maumii_be.exception.DMLException;
 import com.project.maumii_be.exception.RecordListSearchNotException;
 import com.project.maumii_be.repository.RecordListRepository;
@@ -12,11 +12,8 @@ import com.project.maumii_be.repository.RecordRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
 import java.util.List;
 import java.util.stream.Collectors;
 

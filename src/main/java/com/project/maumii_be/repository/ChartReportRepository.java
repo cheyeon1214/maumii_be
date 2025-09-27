@@ -9,11 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface ChartReportRepository extends JpaRepository<Bubble, Long> {
-
-    // 감정 캘린터
-
     // 긍정 감정이 많은 상대 내림차순 정렬
-   @Query(value = "select  DATE(r.r_created_at) as date,\n" +
+    @Query(value = "select  DATE(r.r_created_at) as date,\n" +
            "    SUM(CASE WHEN b.b_emotion='happy' THEN 1 ELSE 0 END) as happy_count,\n" +
            "    SUM(CASE WHEN b.b_emotion IN ('sad','scared') THEN 1 ELSE 0 END) as sad_scared_count,\n" +
            "    SUM(CASE WHEN b.b_emotion IN ('angry','disgust') THEN 1 ELSE 0 END) as angry_disgust_count,\n" +
@@ -28,9 +25,7 @@ public interface ChartReportRepository extends JpaRepository<Bubble, Long> {
                                         @Param("inputYear") int inputYear,
                                         @Param("inputMonth") int inputMonth);
 
+    // 감정 캘린터
     // 부정 감정이 많은 상대 내림차순 정렬
-
     // 긍정, 부정1, 부정2 감정의 추이 (시간의 흐름) 조회
-
-
 }

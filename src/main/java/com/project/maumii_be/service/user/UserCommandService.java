@@ -3,7 +3,7 @@ package com.project.maumii_be.service.user;
 import com.project.maumii_be.domain.Protector;
 import com.project.maumii_be.domain.User;
 import com.project.maumii_be.domain.enums.Theme;
-import com.project.maumii_be.dto.UserRes;
+import com.project.maumii_be.dto.user.UserRes;
 import com.project.maumii_be.dto.user.UserAuthReq;
 import com.project.maumii_be.dto.user.UserInfoReq;
 import com.project.maumii_be.exception.DMLException;
@@ -53,20 +53,6 @@ public class UserCommandService {
         user.setUExposure(exposure);
         userRepository.save(user);
     }
-//    //전화번호 변경
-//    public UserRes updateUserPhone(String uId, String uPhone) throws DMLException, UserSearchNotException {
-//        User user=userRepository.findById(uId)
-//                .orElseThrow(()->new UserSearchNotException("사용자 찾을 수 없음.","NOT_FOUND"));
-//        user.setUPhone(uPhone);
-//        return new UserRes().toUserRes(user);
-//    }
-//    //비밀번호 변경
-//    public UserRes updateUserPwd(String uId, String uPwd) throws DMLException, UserSearchNotException {
-//        User user = userRepository.findById(uId)
-//                .orElseThrow(()->new UserSearchNotException("사용자 찾을 수 없음.","NOT_FOUND"));
-//        user.setUPwd(uPwd);
-//        return new UserRes().toUserRes(user);
-//    }
 
     // 전화번호 & 비밀번호
     public UserRes updateAccount(String uId, UserInfoReq.AccountUpdateReq req) {
@@ -81,6 +67,7 @@ public class UserCommandService {
         }
         return new UserRes().toUserRes(user);
     }
+
     //테마 및 노출 변경
     public UserRes updatePreference(String uId, UserInfoReq.PreferencesUpdateReq req) throws DMLException, UserSearchNotException {
         User user = userRepository.findById(uId)
@@ -112,6 +99,7 @@ public class UserCommandService {
         Protector saved =  protectorRepository.save(protector);
         return saved.getPId();
     }
+
     //보호자 이메일 삭제
     public void deleteProtector(String uId, Long pId) throws DMLException, UserSearchNotException {
         int deleted = protectorRepository.deleteByPIdAndUser_uId(pId,uId);

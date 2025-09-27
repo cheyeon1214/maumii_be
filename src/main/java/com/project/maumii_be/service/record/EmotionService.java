@@ -1,7 +1,7 @@
-package com.project.maumii_be.service;
+package com.project.maumii_be.service.record;
 
-import com.project.maumii_be.dto.EmotionResponse;
-import com.project.maumii_be.dto.TextRequest;
+import com.project.maumii_be.dto.bubble.EmotionResponse;
+import com.project.maumii_be.dto.bubble.TextRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
