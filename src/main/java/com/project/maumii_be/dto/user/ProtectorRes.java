@@ -1,8 +1,7 @@
-package com.project.maumii_be.dto;
+package com.project.maumii_be.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.maumii_be.domain.Protector;
-import jakarta.persistence.JoinColumn;
 import lombok.*;
 
 @AllArgsConstructor

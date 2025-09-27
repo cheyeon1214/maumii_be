@@ -1,9 +1,16 @@
 package com.project.maumii_be.controller;
 
-import com.project.maumii_be.dto.*;
+import com.project.maumii_be.dto.bubble.BubbleUpdateReq;
+import com.project.maumii_be.dto.record.CreateRecordReq;
+import com.project.maumii_be.dto.record.RecordRes;
+import com.project.maumii_be.dto.recordlist.RecordListReq;
+import com.project.maumii_be.dto.recordlist.RecordListRes;
+import com.project.maumii_be.dto.user.UserRes;
 import com.project.maumii_be.service.record.BubbleService;
 import com.project.maumii_be.service.record.RecordListService;
+import com.project.maumii_be.service.record.RecordSaveService;
 import com.project.maumii_be.service.record.RecordService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,7 +20,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,12 +27,15 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "http://localhost:5050", maxAge = 18000)
 @RestController
 @RequestMapping("/api/records")
+@Tag(name = "Record API", description = "녹음 및 녹음 관리 관련 API")
 @RequiredArgsConstructor
 @Slf4j
 public class RecordController {
     private final RecordListService recordListService;
     private final RecordService recordService;
     private final BubbleService bubbleService;
+    private final RecordSaveService recordSaveService;
+    private final com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
 
     // 녹음 리스트 페이지에서 전체 녹음 리스트 조회하기
     @GetMapping("/{uId}/record-list")
@@ -65,10 +74,32 @@ public class RecordController {
         return new ResponseEntity<>(recordListService.updateRecordList(rlId, recordListReq), HttpStatus.ACCEPTED);
     }
 
-    // RecordSaveController 에서 작업 후 합칠 예정..?
-    // 녹음 저장하기
-    // 녹음 리스트, 녹음, 버블 테이블에 모두 들어가야 함
-    // 녹음 리스트 updateDate 갱신
+    // 녹음 저장하기 ... 녹음 리스트, 녹음, 버블 테이블에 모두 들어가야 함
+    @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> saveRecord(
+            @RequestPart("record") CreateRecordReq payload,
+            @RequestParam(required = false) MultiValueMap<String, MultipartFile> files,
+            jakarta.servlet.http.HttpSession session
+    ) {
+        var su = (UserRes) session.getAttribute("LOGIN_USER");
+        if (su == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "UNAUTHORIZED"));
+        }
+        String uId = su.getUId(); // 또는 getUId()
+
+        Long id = recordSaveService.saveRecordWithBubbles(payload, files, uId); // 전달
+        return ResponseEntity.ok(Map.of("recordId", id));
+    }
+
+    // 녹음 리스트 기준으로 녹음s 조회
+    @GetMapping("/{rlId}")
+    public ResponseEntity<List<RecordRes>> getRecordsByRecordList(
+            @PathVariable Long rlId,
+            @RequestParam(required = false) String userId // 보안 적용 시 SecurityContext에서 꺼내도 됨
+    ) {
+        List<RecordRes> list = recordSaveService.getRecordsInList(rlId, userId);
+        return ResponseEntity.ok(list);
+    }
 
     // 녹음 파일 조회하기 (음성 파일 포함)
     @GetMapping("/record-voice/{rId}")
@@ -99,5 +130,4 @@ public class RecordController {
     public ResponseEntity<?> updateBubble(@PathVariable Long bId, @RequestBody BubbleUpdateReq bubbleUpdateReq) {
         return new ResponseEntity<>(bubbleService.updateBubble(bId, bubbleUpdateReq), HttpStatus.ACCEPTED);
     }
-
 }

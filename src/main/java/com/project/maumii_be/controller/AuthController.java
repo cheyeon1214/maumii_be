@@ -1,14 +1,13 @@
 package com.project.maumii_be.controller;
 
 import com.project.maumii_be.domain.User;
-import com.project.maumii_be.dto.UserRes;
+import com.project.maumii_be.dto.user.UserRes;
 import com.project.maumii_be.dto.user.UserAuthReq;
-import com.project.maumii_be.exception.UserSearchNotException;
 import com.project.maumii_be.repository.UserRepository;
 import com.project.maumii_be.security.CustomMemberDetails;
 import com.project.maumii_be.service.user.UserCommandService;
 import com.project.maumii_be.service.user.UserQueryService;
-import jakarta.servlet.http.HttpSession;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,10 +16,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication API", description = "User 인증 관련 API")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
@@ -36,6 +35,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+//    세션 방식 로그인
 //    @PostMapping("/signin")
 //    public ResponseEntity<?> signin(@RequestBody UserAuthReq.SigninReq req, HttpSession session) {
 //        log.info("\n 로그인 사용자 >>>> "+req.toString());

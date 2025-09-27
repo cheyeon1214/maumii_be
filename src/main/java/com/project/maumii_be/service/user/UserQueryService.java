@@ -2,8 +2,8 @@ package com.project.maumii_be.service.user;
 
 import com.project.maumii_be.domain.Protector;
 import com.project.maumii_be.domain.User;
-import com.project.maumii_be.dto.ProtectorRes;
-import com.project.maumii_be.dto.UserRes;
+import com.project.maumii_be.dto.user.ProtectorRes;
+import com.project.maumii_be.dto.user.UserRes;
 import com.project.maumii_be.dto.user.UserAuthReq;
 import com.project.maumii_be.exception.UserAuthenticationException;
 import com.project.maumii_be.exception.UserSearchNotException;
@@ -60,7 +60,4 @@ public class UserQueryService {
 
         return list.stream().map(ProtectorRes::new).collect(Collectors.toList());
     }
-
-
-
 }

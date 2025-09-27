@@ -1,4 +1,4 @@
-package com.project.maumii_be.dto;
+package com.project.maumii_be.dto.user;
 
 import lombok.Getter;
 import lombok.Setter;

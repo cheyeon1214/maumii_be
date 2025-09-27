@@ -1,4 +1,4 @@
-package com.project.maumii_be.dto;
+package com.project.maumii_be.dto.bubble;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,9 +1,10 @@
 package com.project.maumii_be.controller;
 
-import com.project.maumii_be.dto.SmsSendReq;
-import com.project.maumii_be.dto.SmsVerifyReq;
-import com.project.maumii_be.service.MessageSendingService;
-import com.project.maumii_be.service.SmsService;
+import com.project.maumii_be.dto.user.SmsSendReq;
+import com.project.maumii_be.dto.user.SmsVerifyReq;
+import com.project.maumii_be.service.user.MessageSendingService;
+import com.project.maumii_be.service.user.SmsService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/sms")
+@Tag(name = "SMS API", description = "Cool SMS 관련 API")
 @RequiredArgsConstructor
 @Slf4j
 public class SmsController {

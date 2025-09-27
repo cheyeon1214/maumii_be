@@ -1,4 +1,4 @@
-package com.project.maumii_be.service;
+package com.project.maumii_be.service.user;
 
 import com.project.maumii_be.repository.ChartReportRepository;
 import com.project.maumii_be.repository.UserRepository;
@@ -14,7 +14,6 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 public class MonthlyEmotionReportService {

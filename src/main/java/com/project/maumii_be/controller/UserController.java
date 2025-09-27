@@ -1,12 +1,12 @@
 package com.project.maumii_be.controller;
 
-import com.project.maumii_be.domain.User;
-import com.project.maumii_be.dto.UserRes;
+import com.project.maumii_be.dto.user.UserRes;
 import com.project.maumii_be.dto.user.UserInfoReq;
 import com.project.maumii_be.security.CustomMemberDetails;
-import com.project.maumii_be.service.MailSendingService;
+import com.project.maumii_be.service.user.MailSendingService;
 import com.project.maumii_be.service.user.UserCommandService;
 import com.project.maumii_be.service.user.UserQueryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "User API", description = "사용자 관련 API")
 @RequestMapping("/api/users")
 @Slf4j
 public class UserController {
     final UserCommandService userCommandService;
     final UserQueryService userQueryService;
     final MailSendingService mailSendingService;
-
 
     //사용자 정보 조회
     @GetMapping("/{uId}")
@@ -106,13 +106,10 @@ public class UserController {
         return ResponseEntity.ok(userCommandService.addProtector(uId,pEmail));
     }
 
-
     // 보호자 삭제
     @DeleteMapping("/{uId}/protectors/{pId}")
     public ResponseEntity<?> deleteProtector(@PathVariable("uId") String uId, @PathVariable("pId") Long pId) {
         userCommandService.deleteProtector(uId,pId);
         return ResponseEntity.noContent().build();
     }
-
-
 }

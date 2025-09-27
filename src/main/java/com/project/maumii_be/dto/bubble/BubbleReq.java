@@ -1,13 +1,11 @@
 // src/main/java/com/project/maumii_be/dto/BubbleReq.java
-package com.project.maumii_be.dto;
+package com.project.maumii_be.dto.bubble;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.maumii_be.domain.Bubble;
 import com.project.maumii_be.domain.Record;
 import com.project.maumii_be.domain.enums.Emotion;
 import lombok.*;
-
-import java.time.LocalTime;
 
 @AllArgsConstructor
 @NoArgsConstructor

@@ -1,9 +1,8 @@
 package com.project.maumii_be.service.record;
 
 import com.project.maumii_be.domain.Bubble;
-import com.project.maumii_be.dto.BubbleReq;
-import com.project.maumii_be.dto.BubbleRes;
-import com.project.maumii_be.dto.BubbleUpdateReq;
+import com.project.maumii_be.dto.bubble.BubbleRes;
+import com.project.maumii_be.dto.bubble.BubbleUpdateReq;
 import com.project.maumii_be.exception.BubbleSearchNotException;
 import com.project.maumii_be.repository.BubbleRepository;
 import lombok.RequiredArgsConstructor;
