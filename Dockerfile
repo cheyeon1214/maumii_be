@@ -19,5 +19,5 @@ COPY --from=build /app/build/libs/*.jar app.jar
 RUN mkdir -p /data/maumii/uploads/voices
 ENV JAVA_TOOL_OPTIONS="-Dapp.upload.dir=/data/maumii/uploads/voices"
 
-EXPOSE 9000
+EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app/app.jar","--spring.profiles.active=prod"]
