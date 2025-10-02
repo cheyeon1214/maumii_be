@@ -1,0 +1,15 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/maumii-be:$SHORT_SHA', '.']
+  - name: gcr.io/cloud-builders/docker
+    args: ['push', 'gcr.io/$PROJECT_ID/maumii-be:$SHORT_SHA']
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      ['run','deploy','maumii-be',
+       '--image','gcr.io/tidal-nova-473900-i7/maumii-be:$SHORT_SHA',
+       '--region','us-central1',
+       '--allow-unauthenticated',
+       '--add-cloudsql-instances','tidal-nova-473900-i7:us-central1:maumii']
+images:
+  - 'gcr.io/$PROJECT_ID/maumii-be:$SHORT_SHA'
