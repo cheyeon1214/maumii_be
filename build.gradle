@@ -25,7 +25,8 @@ dependencies {
 
 	// JPA + MySQL
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation "mysql:mysql-connector-j" // 이미 있을 것
+	runtimeOnly "com.google.cloud.sql:mysql-socket-factory-connector-j-8:1.14.0" // ✔ 추가 (버전은 최신으로)
 
 	// Redis (한 줄만)
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
