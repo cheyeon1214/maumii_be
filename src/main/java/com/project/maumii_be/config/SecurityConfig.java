@@ -74,7 +74,8 @@ public class SecurityConfig {
                 "https://*.ngrok.app",
                 "http://localhost:*",
                 "http://127.0.0.1:*",
-                "http://192.168.*:*"
+                "http://192.168.*:*",
+                "https://maumii-43895739287.us-central1.run.app"
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
