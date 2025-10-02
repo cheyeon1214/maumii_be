@@ -23,8 +23,4 @@ ENV JAVA_TOOL_OPTIONS="-Dapp.upload.dir=/data/maumii/uploads/voices"
 # Cloud Run은 환경변수 PORT를 주입함(보통 8080). 노출은 관습상 8080으로.
 EXPOSE 8080
 
-# 프로파일 하드코딩 금지
-#ENTRYPOINT ["java","-jar","/app/app.jar","--spring.profiles.active=prod"]
-
-# 표준 진입점
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar","--spring.profiles.active=cloudrun"]

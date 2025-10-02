@@ -58,7 +58,7 @@ dependencies {
 
 	// Dev 전용
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.h2database:h2'      // dev 프로필에서만 사용
+	testImplementation 'com.h2database:h2'      // dev 프로필에서만 사용
 
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
