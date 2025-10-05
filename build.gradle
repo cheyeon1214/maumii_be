@@ -25,10 +25,12 @@ dependencies {
 
 	// JPA + MySQL
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'mysql:mysql-connector-java:8.0.33'
+	// ✅ Cloud SQL MySQL 8 connector (정확한 좌표)
+	implementation "com.google.cloud.sql:mysql-socket-factory-connector-j-8:1.12.2"
 
-	// Cloud SQL Socket Factory (MySQL)
-	implementation 'com.google.cloud.sql:mysql-socket-factory:1.12.2'
+	// ✅ MySQL JDBC 드라이버
+	runtimeOnly "com.mysql:mysql-connector-j:8.4.0"
+
 	// Redis (한 줄만)
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
