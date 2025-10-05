@@ -7,7 +7,7 @@ steps:
     entrypoint: gcloud
     args:
       ['run','deploy','maumii-be',
-       '--image','gcr.io/tidal-nova-473900-i7/maumii-be:$SHORT_SHA',
+       '--image','gcr.io/$PROJECT_ID/maumii-be:$SHORT_SHA',
        '--region','us-central1',
        '--allow-unauthenticated',
        '--add-cloudsql-instances','tidal-nova-473900-i7:us-central1:maumii']
