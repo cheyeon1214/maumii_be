@@ -48,7 +48,7 @@ public class SecurityConfig {
             .formLogin(f -> f.disable())
             .httpBasic(b -> b.disable())
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/users/{uId}", "/api/auth/signin", "/api/auth/signup", "/api/sms/**", "/ws/**", "/swagger-ui/**", "/api-docs/**").permitAll()
+                    .requestMatchers("/api/users/**", "/api/auth/signin", "/api/auth/signup", "/api/sms/**", "/ws/**", "/swagger-ui/**", "/api-docs/**").permitAll()
                     .anyRequest().authenticated()
             )
             // 로그인(JWT 발급) 필터
