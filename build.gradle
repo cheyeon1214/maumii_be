@@ -17,7 +17,8 @@ configurations {
 	developmentOnly
 }
 
-repositories { mavenCentral() }
+repositories { mavenCentral()
+	maven { url "https://maven.google.com" }}
 
 dependencies {
 	// Web (MVC)
@@ -25,11 +26,11 @@ dependencies {
 
 	// JPA + MySQL
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	// ✅ Cloud SQL MySQL 8 connector (정확한 좌표)
-	implementation "com.google.cloud.sql:mysql-socket-factory-connector-j-8:1.12.2"
+	// ✅ Cloud SQL Connector for MySQL (정확한 공식 버전)
+	implementation 'com.google.cloud.sql:mysql-socket-factory-connector-j-8:1.13.1'
 
-	// ✅ MySQL JDBC 드라이버
-	runtimeOnly "com.mysql:mysql-connector-j:8.4.0"
+	// ✅ MySQL Driver
+	runtimeOnly 'com.mysql:mysql-connector-j:8.4.0'
 
 	// Redis (한 줄만)
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
