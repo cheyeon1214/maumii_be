@@ -1,35 +1,26 @@
-# --- Build stage (JDK + gradle wrapper 사용) ---
-FROM eclipse-temurin:17-jdk AS build
+# --- Build stage ---
+FROM gradle:8.7-jdk17 AS build
 WORKDIR /app
-
-# 1) gradle wrapper와 설정만 먼저 복사 (캐시 극대화)
-COPY gradlew gradlew
-COPY gradle gradle
-COPY settings.gradle* ./
-COPY build.gradle* ./
-
-# 2) 실행 권한 및 버전 확인
-RUN chmod +x ./gradlew && ./gradlew --version
-
-# 3) 소스 복사 후 빌드
-COPY src src
-# 문제가 나면 원인 보려고 --stacktrace --info 추가
-RUN ./gradlew clean bootJar -x test --no-daemon --stacktrace --info
+COPY . .
+RUN gradle clean bootJar --no-daemon
 
 # --- Run stage ---
 FROM eclipse-temurin:17-jre-jammy
-WORKDIR /app
 
-# ffmpeg 필요하면 유지
+# ffmpeg 포함
 RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-# 빌드 산출물 복사
+WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 
-# 업로드 경로
+# 업로드 디렉토리 (런타임에 쓸 경로)
 RUN mkdir -p /data/maumii/uploads/voices
+
+# 업로드 경로를 시스템 프로퍼티로 주입
 ENV JAVA_TOOL_OPTIONS="-Dapp.upload.dir=/data/maumii/uploads/voices"
 
+# Cloud Run은 환경변수 PORT를 주입함(보통 8080). 노출은 관습상 8080으로.
 EXPOSE 8080
+
 ENTRYPOINT ["java","-jar","/app/app.jar","--spring.profiles.active=cloudrun"]
