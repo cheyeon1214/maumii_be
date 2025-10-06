@@ -6,11 +6,13 @@ import com.project.maumii_be.dto.record.RecordRes;
 import com.project.maumii_be.dto.recordlist.RecordListReq;
 import com.project.maumii_be.dto.recordlist.RecordListRes;
 import com.project.maumii_be.dto.user.UserRes;
+import com.project.maumii_be.jwt.JWTUtil;
 import com.project.maumii_be.service.record.BubbleService;
 import com.project.maumii_be.service.record.RecordListService;
 import com.project.maumii_be.service.record.RecordSaveService;
 import com.project.maumii_be.service.record.RecordService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -75,19 +77,29 @@ public class RecordController {
     }
 
     // 녹음 저장하기 ... 녹음 리스트, 녹음, 버블 테이블에 모두 들어가야 함
+
     @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> saveRecord(
             @RequestPart("record") CreateRecordReq payload,
             @RequestParam(required = false) MultiValueMap<String, MultipartFile> files,
-            jakarta.servlet.http.HttpSession session
+            HttpServletRequest request,
+            JWTUtil jwtUtil
     ) {
-        var su = (UserRes) session.getAttribute("LOGIN_USER");
-        if (su == null) {
-            return ResponseEntity.status(401).body(Map.of("error", "UNAUTHORIZED"));
+        String auth = request.getHeader("Authorization");
+        if (auth == null || !auth.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "NO_TOKEN"));
         }
-        String uId = su.getUId(); // 또는 getUId()
+        String token = auth.substring(7);
+        String uId;
+        try {
+            uId = jwtUtil.getUId(token); // 또는 getUserId(token) 등 네 유틸 메서드
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "INVALID_TOKEN"));
+        }
 
-        Long id = recordSaveService.saveRecordWithBubbles(payload, files, uId); // 전달
+        Long id = recordSaveService.saveRecordWithBubbles(payload, files, uId);
         return ResponseEntity.ok(Map.of("recordId", id));
     }
 
