@@ -20,15 +20,15 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Override
-    public void addCorsMappings(CorsRegistry reg) {
-        reg.addMapping("/**")
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:5050",
-                        "http://127.0.0.1:5050",
-                        "https://192.168.210.26:5173",  // 👉 실제 프론트 오리진 추가
-                        "http://localhost:5173"
+                        "https://192.168.230.9:5173",
+                        "https://maumii-fe-43895739287.us-central1.run.app"
                 )
-                .allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
                 .allowCredentials(true);
     }
 }
