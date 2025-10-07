@@ -25,7 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         "http://localhost:5050",
                         "https://192.168.230.9:5173",
-                        "https://maumii-fe-43895739287.us-central1.run.app"
+                        "https://maumii-43895739287.us-central1.run.app"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
