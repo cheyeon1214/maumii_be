@@ -17,7 +17,7 @@ import java.util.Map;
         origins = {
                 "http://localhost:5050",
                 "https://192.168.230.9:5173",
-                "https://maumii-fe-43895739287.us-central1.run.app", // 프론트 Cloud Run
+                "https://maumii-43895739287.us-central1.run.app", // 프론트 Cloud Run
                 "https://maumii-be-43895739287.us-central1.run.app"  // 자기 자신 (서버 간 통신용)
         },
         allowedHeaders = "*",
