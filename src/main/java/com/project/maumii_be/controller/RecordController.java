@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class RecordController {
+    private final JWTUtil jwtUtil;
     private final RecordListService recordListService;
     private final RecordService recordService;
     private final BubbleService bubbleService;
@@ -82,25 +83,31 @@ public class RecordController {
     public ResponseEntity<Map<String, Object>> saveRecord(
             @RequestPart("record") CreateRecordReq payload,
             @RequestParam(required = false) MultiValueMap<String, MultipartFile> files,
-            HttpServletRequest request,
-            JWTUtil jwtUtil
+            HttpServletRequest request
     ) {
         String auth = request.getHeader("Authorization");
         if (auth == null || !auth.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "NO_TOKEN"));
         }
+
         String token = auth.substring(7);
         String uId;
         try {
-            uId = jwtUtil.getUId(token); // 또는 getUserId(token) 등 네 유틸 메서드
+            uId = jwtUtil.getUId(token);  // JWT에서 uId 추출
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "INVALID_TOKEN"));
         }
 
-        Long id = recordSaveService.saveRecordWithBubbles(payload, files, uId);
-        return ResponseEntity.ok(Map.of("recordId", id));
+        try {
+            Long id = recordSaveService.saveRecordWithBubbles(payload, files, uId);
+            return ResponseEntity.ok(Map.of("recordId", id));
+        } catch (Exception e) {
+            log.error("saveRecord failed", e);
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     // 녹음 리스트 기준으로 녹음s 조회

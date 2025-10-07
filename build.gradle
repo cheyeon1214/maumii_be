@@ -21,6 +21,7 @@ repositories { mavenCentral()
 	maven { url "https://maven.google.com" }}
 
 dependencies {
+	implementation("com.google.cloud:google-cloud-storage:2.43.0")
 	// Web (MVC)
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
