@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "*", maxAge = 18000)
+//@CrossOrigin(origins = "*", maxAge = 18000)
 @RestController
 @RequestMapping("/api/records")
 @Tag(name = "Record API", description = "녹음 및 녹음 관리 관련 API")
