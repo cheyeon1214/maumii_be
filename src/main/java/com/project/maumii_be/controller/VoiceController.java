@@ -15,17 +15,17 @@ import java.nio.file.*;
 @RestController
 @RequestMapping("/api/voices")
 @Tag(name = "Voice API", description = "녹음된 음성 파일 관련 API")
-@CrossOrigin(
-        origins = {
-                "http://localhost:5050","http://127.0.0.1:5050",
-                "http://192.168.210.13:5173","http://localhost:5173",
-                "https://192.168.210.13:5173"
-        },
-        allowedHeaders = "*",
-        methods = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.OPTIONS},
-        allowCredentials = "true",
-        exposedHeaders = {"Accept-Ranges","Content-Range","Content-Length","Content-Type"}
-)
+//@CrossOrigin(
+//        origins = {
+//                "http://localhost:5050","http://127.0.0.1:5050",
+//                "http://192.168.210.13:5173","http://localhost:5173",
+//                "https://192.168.210.13:5173"
+//        },
+//        allowedHeaders = "*",
+//        methods = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.OPTIONS},
+//        allowCredentials = "true",
+//        exposedHeaders = {"Accept-Ranges","Content-Range","Content-Length","Content-Type"}
+//)
 public class VoiceController {
     // Spring Bean 으로 주입
     private final SecretKey secretKey;

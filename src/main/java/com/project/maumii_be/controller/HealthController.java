@@ -13,16 +13,16 @@ import java.util.Map;
 @RequestMapping("/api")
 @Tag(name = "AI Model API", description = "SST 와 감정 분석 모델 관련 API")
 // 프런트 출처(포트 5050)만 열기. 필요하면 127.0.0.1도 추가
-@CrossOrigin(
-        origins = {
-                "http://localhost:5050",
-                "https://192.168.230.9:5173",
-                "https://maumii-43895739287.us-central1.run.app", // 프론트 Cloud Run
-                "https://maumii-be-43895739287.us-central1.run.app"  // 자기 자신 (서버 간 통신용)
-        },
-        allowedHeaders = "*",
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS}
-)
+//@CrossOrigin(
+//        origins = {
+//                "http://localhost:5050",
+//                "https://192.168.230.9:5173",
+//                "https://maumii-43895739287.us-central1.run.app", // 프론트 Cloud Run
+//                "https://maumii-be-43895739287.us-central1.run.app"  // 자기 자신 (서버 간 통신용)
+//        },
+//        allowedHeaders = "*",
+//        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS}
+//)
 public class HealthController {
 
     private final EmotionService emotionService;
