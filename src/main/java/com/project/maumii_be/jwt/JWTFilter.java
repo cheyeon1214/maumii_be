@@ -40,24 +40,16 @@ public class JWTFilter extends OncePerRequestFilter {
     /** PUBLIC 경로 & OPTIONS 는 필터 자체를 건너뜀 */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        // 프리플라이트는 무조건 패스
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true;
 
-        // 앱 기준 경로를 우선 사용 (리버스 프록시/프리픽스 환경에서 안전)
-        String path = request.getServletPath();
-        if (path == null || path.isBlank()) {
-            path = request.getRequestURI();
+        String path = request.getRequestURI();
+        if (path == null) return false;
+
+        // ✅ Cloud Run / 프록시 경로에도 대응하도록 contains()까지 허용
+        if (path.contains("/api/healthz") || path.contains("/error")) {
+            return true;
         }
 
-        // 디버그용(원인 추적 끝나면 지워도 됨)
-        // System.out.println("[JWTFilter] path=" + path);
-
-        // 여기 등록한 공개 경로는 필터 자체를 스킵
-        for (String p : PUBLIC_PREFIXES) {
-            if (path.equals(p) || path.startsWith(p) || path.contains(p)) {
-                return true;
-            }
-        }
         return false;
     }
 
