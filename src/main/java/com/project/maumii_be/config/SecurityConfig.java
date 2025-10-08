@@ -44,18 +44,17 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
-                // ⬇️ 명시적으로 Security에 CORS bean 연결
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(f -> f.disable())
                 .httpBasic(b -> b.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // ⬇️ 프리플라이트는 무조건 통과
+                        // 1) 프리플라이트/공개 우선
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET,  "/api/healthz").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/healthz").permitAll()
 
-                        // 공개 엔드포인트
                         .requestMatchers(
-                                "/api/healthz",         // POST/GET 허용
                                 "/api/auth/**",
                                 "/api/users/**",
                                 "/api/sms/**",
@@ -64,9 +63,10 @@ public class SecurityConfig {
                                 "/ws/**"
                         ).permitAll()
 
-                        // 녹음 저장 등은 인증 필요(컨트롤러에서 JWT 파싱하므로 인증 강제)
+                        // 2) 그 다음 보호 경로
                         .requestMatchers("/api/records/**").authenticated()
 
+                        // 3) 나머지
                         .anyRequest().authenticated()
                 )
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
