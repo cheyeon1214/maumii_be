@@ -19,6 +19,6 @@ public class EmotionService {
         request.setText(text);
 
         // POST 로 /analyze 호출
-        return restTemplate.postForObject("https://maumii-ai-43895739287.europe-west1.run.app/analyze", request, EmotionResponse.class);
+        return restTemplate.postForObject("https://maumii-ai-43895739287.us-central1.run.app/analyze", request, EmotionResponse.class);
     }
 }
