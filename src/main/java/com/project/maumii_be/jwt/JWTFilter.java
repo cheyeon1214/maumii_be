@@ -28,7 +28,8 @@ public class JWTFilter extends OncePerRequestFilter {
 
     // ⬇️ 여기 등록한 경로는 토큰 없어도 항상 통과
     private static final Set<String> PUBLIC_PREFIXES = Set.of(
-            "/api/healthz"
+            "/api/healthz",
+            "/error"
     );
 
     public JWTFilter(JWTUtil jwtUtil, UserRepository userRepository) {
@@ -39,11 +40,23 @@ public class JWTFilter extends OncePerRequestFilter {
     /** PUBLIC 경로 & OPTIONS 는 필터 자체를 건너뜀 */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
+        // 프리플라이트는 무조건 패스
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true;
-        // prefix 일치로 체크
+
+        // 앱 기준 경로를 우선 사용 (리버스 프록시/프리픽스 환경에서 안전)
+        String path = request.getServletPath();
+        if (path == null || path.isBlank()) {
+            path = request.getRequestURI();
+        }
+
+        // 디버그용(원인 추적 끝나면 지워도 됨)
+        // System.out.println("[JWTFilter] path=" + path);
+
+        // 여기 등록한 공개 경로는 필터 자체를 스킵
         for (String p : PUBLIC_PREFIXES) {
-            if (path.startsWith(p)) return true;
+            if (path.equals(p) || path.startsWith(p) || path.contains(p)) {
+                return true;
+            }
         }
         return false;
     }
