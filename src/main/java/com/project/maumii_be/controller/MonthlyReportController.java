@@ -75,9 +75,19 @@ public class MonthlyReportController {
         Random rnd = new Random(seed);
 
         Map<LocalDate, String> map = new HashMap<>();
-        for (int d = 1; d <= ym.lengthOfMonth(); d++) {
-            map.put(ym.atDay(d), pool[rnd.nextInt(pool.length)]);
-        }
+//        for (int d = 1; d <= 10; d++) {
+//            map.put(ym.atDay(d), pool[rnd.nextInt(pool.length)]);
+//        }
+        map.put(ym.atDay(1), pool[0]);
+        map.put(ym.atDay(2), pool[2]);
+        map.put(ym.atDay(3), pool[3]);
+        map.put(ym.atDay(4), pool[0]);
+
+        map.put(ym.atDay(6), pool[2]);
+        map.put(ym.atDay(7), pool[0]);
+        map.put(ym.atDay(8), pool[3]);
+        map.put(ym.atDay(9), pool[3]);
+        map.put(ym.atDay(10), pool[0]);
         return map;
     }
 }
