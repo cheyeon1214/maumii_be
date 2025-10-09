@@ -21,7 +21,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -148,5 +151,29 @@ public class RecordController {
     @PutMapping("/bubble/{bId}")
     public ResponseEntity<?> updateBubble(@PathVariable Long bId, @RequestBody BubbleUpdateReq bubbleUpdateReq) {
         return new ResponseEntity<>(bubbleService.updateBubble(bId, bubbleUpdateReq), HttpStatus.ACCEPTED);
+    }
+
+    // 복호화된 WAV를 스트리밍으로 내려줌
+    @GetMapping(value = "/{rId}/voice", produces = "audio/wav")
+    public ResponseEntity<StreamingResponseBody> streamDecryptedVoice(@PathVariable Long rId) throws Exception {
+        // 1) GCS에서 .enc 다운로드 → 복호화 → 임시 WAV 경로 획득
+        Path wav = recordService.getDecryptedVoicePath(rId);
+
+        long size = Files.size(wav);
+
+        StreamingResponseBody body = outputStream -> {
+            try (var in = Files.newInputStream(wav)) {
+                in.transferTo(outputStream);   // 스트리밍 전송
+            } finally {
+                try { Files.deleteIfExists(wav); } catch (Exception ignore) {}
+            }
+        };
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("audio/wav"))
+                .header("Content-Disposition", "inline; filename=\"voice.wav\"")
+                .header("Cache-Control", "no-store")   // 캐시 원치 않으면
+                .contentLength(size)
+                .body(body);
     }
 }
