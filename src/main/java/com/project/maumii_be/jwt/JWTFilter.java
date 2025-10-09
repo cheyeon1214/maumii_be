@@ -13,44 +13,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Set;
 
-/**
- * JWT 검증 필터
- * - PUBLIC 경로(healthz 등)는 아예 필터를 적용하지 않음
- * - Authorization 헤더가 없거나 형식이 이상하면 "그냥 통과" (인증 없이)
- * - 유효한 토큰이면 SecurityContext에 인증 주입
+/*
+  무조건 사용자 요청이 들어올 때마다 이 필터를 제일 먼저 탐.
+  1) Authorization 헤더 존재 여부 확인
+  2) 유효한 JWT면 SecurityContext에 인증 정보 등록
+  3) 아니면 그냥 다음 필터로 통과
  */
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
 
-    // ⬇️ 여기 등록한 경로는 토큰 없어도 항상 통과
-    private static final Set<String> PUBLIC_PREFIXES = Set.of(
-            "/api/healthz",
-            "/error"
-    );
-
     public JWTFilter(JWTUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
-    }
-
-    /** PUBLIC 경로 & OPTIONS 는 필터 자체를 건너뜀 */
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true;
-
-        String path = request.getRequestURI();
-        if (path == null) return false;
-
-        // ✅ Cloud Run / 프록시 경로에도 대응하도록 contains()까지 허용
-        if (path.contains("/api/healthz") || path.contains("/error")) {
-            return true;
-        }
-
-        return false;
     }
 
     @Override
@@ -59,50 +36,57 @@ public class JWTFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        // Authorization 헤더에서 토큰 추출
         String authorization = request.getHeader("Authorization");
 
-        // 헤더가 없으면 인증 없이 통과 (보호된 경로는 결국 401/403을 Security 쪽에서 처리)
+        // 헤더가 없거나 Bearer 형식이 아니면 그냥 다음 필터로 넘김
         if (authorization == null || !authorization.startsWith("Bearer ")) {
+            System.out.println("[JWTFilter] Token not found or invalid format");
             filterChain.doFilter(request, response);
             return;
         }
 
-        // "Bearer <token>" 형태 보장 체크
-        String[] parts = authorization.split(" ", 2);
-        if (parts.length != 2 || parts[1] == null || parts[1].isBlank()) {
-            // 이상한 헤더면 무시하고 통과 (차라리 미인증으로 처리)
+        // "Bearer " 부분 제거 후 순수 토큰만 획득
+        String token = authorization.split(" ")[1];
+
+        // 토큰 만료 확인
+        if (jwtUtil.isExpired(token)) {
+            System.out.println("[JWTFilter] Token expired");
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = parts[1].trim();
+        // 토큰에서 정보 추출
+        String id = jwtUtil.getUId(token);
+        String role = jwtUtil.getRole(token);
+        String name = jwtUtil.getUName(token);
 
-        // 토큰 파싱 중 오류가 나도 "막지 말고" 통과 → 미인증 상태로 컨트롤러/인가 규칙이 판단
-        try {
-            if (jwtUtil.isExpired(token)) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            String id   = jwtUtil.getUId(token);
-            // 필요하다면 role/name도 꺼내 쓰기
-            // String role = jwtUtil.getRole(token);
-            // String name = jwtUtil.getUName(token);
-
-            User member = userRepository.findById(id).orElse(null);
-            if (member == null) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            CustomMemberDetails principal = new CustomMemberDetails(member);
-            Authentication authToken = new UsernamePasswordAuthenticationToken(
-                    principal, null, principal.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-        } catch (Exception ignore) {
-            // 토큰 형식/서명 오류 등 → 그냥 미인증으로 통과
+        // 사용자 조회
+        User member = userRepository.findById(id).orElse(null);
+        if (member == null) {
+            System.out.println("[JWTFilter] User not found in DB");
+            filterChain.doFilter(request, response);
+            return;
         }
 
+        // 인증 객체 생성
+        CustomMemberDetails customMemberDetails = new CustomMemberDetails(member);
+        Authentication authToken = new UsernamePasswordAuthenticationToken(
+                customMemberDetails, null, customMemberDetails.getAuthorities());
+
+        // SecurityContextHolder에 등록
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        // 다음 필터 실행
         filterChain.doFilter(request, response);
     }
 }
+
+/*
+요약:
+- 모든 요청에 대해 JWT 검증 수행
+- /api/healthz 같은 공개 엔드포인트도 무조건 이 필터를 통과
+- 토큰이 없으면 그냥 다음 필터로 통과
+- 토큰이 있으면 파싱해서 SecurityContext에 등록
+- 예외 처리(shouldNotFilter)는 따로 없음
+*/
